@@ -35,21 +35,29 @@ def greedy_largest_compatible_subset(requests):
   r1.finish <= r2.start or r1.start >= r2.finish
 
   Greedy algorithm:
+  - Sort the array by finish time
   - Pick request with earliest finish time, r
   - Add r to the result
-  - Filter out all remaining requests incompatible with r
+  - Iterate over the array until you reach
+    the next compatible result
 
   requests: List[int]
   start: Dict[int]int
   finish: Dict[int]int
 
+  Complexity: O(n * log(n))
+
   """
   result = []
-  while requests:
-    best = min(requests, key=lambda r: r.finish)
+  i = 0
+  requests.sort(key=lambda r: r.finish)
+  n = len(requests)
+  while i < n:
+    best = requests[i]
     result.append(best)
-    requests = filter(
-      lambda r: r != best and r.is_compatible(best), requests)
+    while i < n and \
+      not requests[i].is_compatible(best):
+        i += 1
   return result
 
 
@@ -60,7 +68,6 @@ class WeightedRequest(Request):
   weight: int
 
   """
-
   def __init__(self, start, finish, weight):
     Request.__init__(self, start, finish)
     self.weight = weight

@@ -1,6 +1,8 @@
 """
 Convex Hull
 -----------
+Topics covered:
+- Divide and conquer
 
 Find the convex hull of a set of
 points of size n:

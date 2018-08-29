@@ -1,6 +1,9 @@
 """
 Interval Scheduling
 -------------------
+Topics covered:
+- Greedy algorithms
+- Dynamic programming
 
 """
 

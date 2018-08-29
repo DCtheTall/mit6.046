@@ -21,7 +21,10 @@ def select(S, i, key=lambda x: x):
   # Divide the list into columns of 5
   sublists = [S[k:k+5] for k in range(0, len(S), 5)]
   # Find the medians of each column
-  medians = [sorted(sublist, key=key)[len(sublist) // 2] for sublist in sublists]
+  medians = [
+    sorted(sublist, key=key)[len(sublist) // 2]
+    for sublist in sublists
+  ]
   if len(medians) <= 5:
     # If the number of columns is less than 5 elements
     # return the median of medians

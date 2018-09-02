@@ -116,6 +116,8 @@ def fast_polynomial_multiplication(A, B):
   Complexity: O(n * log(n))
 
   """
+  if not A or not B: # Covers None and empty case
+    return ()
   n_A = len(A)
   n_B = len(B)
   n = n_A + n_B

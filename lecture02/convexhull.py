@@ -74,6 +74,11 @@ def curry_clockwise_compare(center):
   for sorting elements in clockwise order
   given a center point
 
+  It returns a function used for comparison in sort,
+  in this implementation, the comparison function is
+  curried with the center of the circle you are comparing
+  the points' relative positions to
+
   From: https://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
 
   """

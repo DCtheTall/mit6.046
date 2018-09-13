@@ -49,6 +49,11 @@ def freivalds(A, B, C, k=10):
   in O(n ** 2) time with 1 / (2 ** k)
   probability of error
 
+  This does so by generating a random
+  bit vector r and verifying
+  that A * (B * r) - (C * r) == 0
+  k times
+
   """
   n = len(A)
   result = True

@@ -21,7 +21,7 @@ def basic_partition(L, lo, hi):
   """
   pivot = L[hi]
   i = lo - 1
-  for k in range(lo, hi + 1):
+  for k in range(lo, hi):
     if L[k] < pivot:
       i += 1
       L[i], L[k] = L[k], L[i]
@@ -80,12 +80,14 @@ def intelligent_partition(L, lo, hi):
   else:
     pivot = select(L, (lo + hi) // 2)
     i = L.index(pivot)
+  L[i], L[hi] = L[hi], L[i]
+  pivot = L[hi]
   k = lo - 1
-  for m in range(lo, hi + 1):
+  for m in range(lo, hi):
     if L[m] < pivot:
       k += 1
       L[k], L[m] = L[m], L[k]
-  L[i], L[k + 1] = L[k + 1], L[i]
+  L[hi], L[k + 1] = L[k + 1], L[hi]
   return k + 1
 
 
@@ -106,6 +108,45 @@ def intelligent_quicksort(L, lo, hi):
     intelligent_quicksort(L, pivot + 1, hi)
 
 
-L = [3, 5, 1, 2, 10, 16, 3, 4, 7, 10]
-intelligent_quicksort(L, 0, len(L) - 1)
-print L
+
+def random_partition(L, lo, hi):
+  """
+  This implementation chooses a random element
+  to be the pivot, and repeats until it tries
+  either the resulting partitions are at least
+  a quarter of the length of the list or
+  it tried hi - lo times.
+
+  """
+  i = randint(lo, hi)
+  L[i], L[hi] = L[hi], L[i]
+  pivot = L[hi]
+  k = lo - 1
+  for m in range(lo, hi):
+    if L[m] < pivot:
+      k += 1
+      L[k], L[m] = L[m], L[k]
+  L[hi], L[k + 1] = L[k + 1], L[hi]
+  n = len(L) // 4
+  if (hi - lo > 4) \
+    and (((i + 1) - lo) < n
+      or (hi - (i + 1)) < n):
+        return random_partition(L, lo, hi)
+  return k + 1
+
+
+def random_quicksort(L, lo, hi):
+  """
+  Randomized quicksort partitions on
+  a randomly chosen pivot. To ensure
+  that partitions are reasonably
+  balanced, each partition will repeat
+  until each side is at least a quarter
+  the size of the whole part of the
+  list that is being partitioned.
+
+  """
+  if lo < hi:
+    pivot = random_partition(L, lo, hi)
+    random_quicksort(L, lo, pivot - 1)
+    random_quicksort(L, pivot + 1, hi)

@@ -85,10 +85,12 @@ class SkipList(object):
     contains the node, provided a level below exists
 
     """
-    while node.next and node.next.val < val:
-      node = node.next
-    if node.next and node.next.val == val:
-      return True
+    while node.next is not None \
+      and node.next.val < val:
+        node = node.next
+    if node.next is not None \
+      and node.next.val == val:
+        return True
     if node.down is None:
       return False
     return SkipList.search_list(val, node.down)

@@ -64,6 +64,8 @@ class PerfectHashTable(object):
       buckets[PerfectHashTable.hash(0, key) % size].append(key)
     buckets.sort(key=len, reverse=True)
 
+    # Pick a hash function to store the base integer value, d, in the table
+    # G, and the value that hash(d, value) in V
     for i, bucket in enumerate(buckets):
       if len(bucket) <= 1:
         break
@@ -85,6 +87,9 @@ class PerfectHashTable(object):
       if (i % 1e3) == 0:
         print 'bucket {}  finished'.format(i)
 
+    # After going through all the buckets with length > 1, insert
+    # the remaining values into the remaining slots through trial and
+    # error
     freelist = [k for k, value in enumerate(V) if value is None]
     for i in range(i, size):
       bucket = buckets[i]

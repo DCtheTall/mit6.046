@@ -9,17 +9,20 @@ O(log(N)) time
 """
 
 
-from avl import TreeNode
+from avl import AVLTreeNode, Tree
 
 
-class OrderStatisticNode(TreeNode):
+class OrderStatTreeNode(AVLTreeNode):
   """
   OrderStatisticNode has some extended properties
   of the TreeNode in avl.py
 
   """
   def __init__(self, val):
-    TreeNode.__init__(self, val)
+    AVLTreeNode.__init__(self, val)
+
+  def _create_new(self, val):
+    return OrderStatTreeNode(val)
 
   def rank(self):
     """
@@ -46,3 +49,27 @@ class OrderStatisticNode(TreeNode):
       return self.left.select(i)
     return self.right.select(i - r)
 
+
+class OrderStatisticTree(Tree):
+  def __init__(self):
+    Tree.__init__(self, OrderStatTreeNode)
+
+  def rank(self, val):
+    """
+    Select the rank of a value in the OrderStatisticTree
+
+    """
+    if self.root is None:
+      raise KeyError(
+        '{} is not in OrderStatisticTree, tree is empty'.format(val))
+    return self.root.rank(val)
+
+  def select(self, i):
+    """
+    Select the node at rank i in the tree
+
+    """
+    if self.root is None or i > self.root.size:
+      raise IndexError(
+        'Rank {} out of range'.format(i))
+    return self.root.select(i)

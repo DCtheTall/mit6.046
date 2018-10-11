@@ -38,16 +38,30 @@ from remove import BTreeDeleteNode as Node
 
 
 class BTree(object):
+  """
+  B-tree class using the nodes defined
+  in the other programs
+
+  """
   def __init__(self, t):
     self.root = None
     self.t = t
 
   def search(self, key):
+    """
+    Search the B-tree for the node
+    containing a provided key
+
+    """
     if self.root is None:
       return None
     return self.root.search(key)
 
   def insert(self, key):
+    """
+    Insert a provided key into the tree
+
+    """
     if self.root is None:
       self.root = Node(self.t)
     self.root = self.root.insert(key)
@@ -61,6 +75,10 @@ class BTree(object):
       self.root = self.root.children[0]
 
   def traverse(self):
+    """
+    Traverse the tree and return the values inorder
+
+    """
     if self.root is None:
       return ''
     return self.root.traverse()

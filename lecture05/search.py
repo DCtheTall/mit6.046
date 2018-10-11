@@ -22,7 +22,6 @@ class BTreeSearchNode(object):
     self.max_capacity = (2 * t) - 1
     self.keys = []
     self.children = []
-    self.parent = None
 
   @property
   def n(self):
@@ -59,16 +58,20 @@ class BTreeSearchNode(object):
       return None
     return self.children[i].search(key)
 
-  def traverse(self):
+  def traverse(self, root=True):
     """
     Print the tree inorder
 
     """
+    if not self.is_leaf() and not root and \
+      (self.n < (self.t - 1) or \
+        self.n > ((2 * self.t) - 1)):
+          raise Exception
     res = ''
     for i in range(self.n):
       if not self.is_leaf():
-        res += self.children[i].traverse()
+        res += self.children[i].traverse(False)
       res += '{} '.format(self.keys[i])
     if not self.is_leaf():
-      res += self.children[-1].traverse()
+      res += self.children[-1].traverse(False)
     return res

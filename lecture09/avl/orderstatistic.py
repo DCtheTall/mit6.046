@@ -9,7 +9,7 @@ O(log(N)) time
 """
 
 
-from avl import AVLTreeNode, Tree
+from avl import AVLTreeNode, BinaryTree
 
 
 class OrderStatTreeNode(AVLTreeNode):
@@ -50,9 +50,16 @@ class OrderStatTreeNode(AVLTreeNode):
     return self.right.select(i - r)
 
 
-class OrderStatisticTree(Tree):
+class OrderStatisticTree(BinaryTree):
+  """
+  Order-statistic tree can do normal
+  binary search tree operations in O(log(N)) time
+
+  Can also find the rank of a provided value in the
+  tree
+  """
   def __init__(self):
-    Tree.__init__(self, OrderStatTreeNode)
+    BinaryTree.__init__(self, OrderStatTreeNode)
 
   def rank(self, val):
     """
@@ -60,9 +67,12 @@ class OrderStatisticTree(Tree):
 
     """
     if self.root is None:
-      raise KeyError(
+      raise Exception(
         '{} is not in OrderStatisticTree, tree is empty'.format(val))
-    return self.root.rank(val)
+    node = self.search(val)
+    if node is None:
+      return -1
+    return node.rank(val)
 
   def select(self, i):
     """

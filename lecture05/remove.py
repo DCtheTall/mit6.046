@@ -111,7 +111,7 @@ class BTreeDeleteNode(BTreeInsertNode):
     """
     child = self.children[i]
     sibling = self.children[i + 1]
-    child.keys.push(self.keys.pop(i))
+    child.keys.append(self.keys.pop(i))
     child.keys += sibling.keys
     if not child.is_leaf():
       child.children += sibling.children

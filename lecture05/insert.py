@@ -61,19 +61,19 @@ class BTreeInsertNode(BTreeSearchNode):
     t - 1 and the number of children to t
 
     """
-    new_node = self._create_new()
+    node = self._create_new()
 
     for _ in range(self.t - 1):
-      new_node.keys.append(child.keys.pop())
-    new_node.keys.reverse()
+      node.keys.append(child.keys.pop())
+    node.keys.reverse()
 
     if not child.is_leaf():
       for _ in range(self.t):
-        new_node.children.append(child.children.pop())
-    new_node.children.reverse()
+        node.children.append(child.children.pop())
+      node.children.reverse()
 
     self.children = \
-        self.children[:i + 1] + [new_node] + self.children[i + 1:]
+      self.children[:i + 1] + [node] + self.children[i + 1:]
 
     self.keys = self.keys[:i] + [child.keys.pop()] + self.keys[i:]
 
@@ -86,14 +86,12 @@ class BTreeInsertNode(BTreeSearchNode):
     if self.n == 0:
       self.keys.append(key)
       return self
-    if self.n == self.max_capacity:
-      new_root = self._create_new()
-      new_root.children.append(self)
-      new_root._split_child(self, 0)
-      i = 0
-      if new_root.keys[0] < key:
-        i += 1
-      new_root.children[i]._insert_non_full(key)
-      return new_root
+    if self.n == self.max_capacity: # case when root is full
+      node = self._create_new()
+      node.children.append(self)
+      node._split_child(self, 0)
+      i = 0 if node.keys[0] < key else 1
+      node.children[i]._insert_non_full(key)
+      return node
     self._insert_non_full(key)
     return self

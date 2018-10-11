@@ -180,6 +180,19 @@ class AVLTreeNode(object):
       return self._rotate_left()
     return self
 
+  def search(self, val):
+    """
+    Search the binary tree for a node containing
+    the provided value
+
+    """
+    if self.val == val:
+      return self
+    if self.val > val:
+      return None if self.left is None else self.left.search(val)
+    return None if self.right is None else self.right.search(val)
+
+
   def insert(self, val):
     """
     Insert a val into the subtree rooted at this node
@@ -197,7 +210,7 @@ class AVLTreeNode(object):
     return node._balance()
 
 
-class Tree(object):
+class BinaryTree(object):
   """
   General balanced binary tree class
   which can use different types of nodes
@@ -207,22 +220,41 @@ class Tree(object):
     self.Node = Node
     self.root = None
 
+  def search(self, val):
+    """
+    Search the tree for the node
+    containing the provided value
+
+    """
+    if self.root is None:
+      return None
+    return self.root.search(val)
+
   def insert(self, val):
+    """
+    Insert a value into the tree
+
+    """
     if self.root is None:
       self.root = self.Node(val)
       return
     self.root = self.root.insert(val)
 
   def delete(self, val):
+    """
+    Delete a value in the tree
+
+    """
     if self.root is None:
-      return
+      raise Exception(
+        'Cannot delete value {} from an empty tree'.format(val))
     self.root = self.root.delete(val)
 
 
-class AVLTree(Tree):
+class AVLTree(BinaryTree):
   """
   AVL Tree
 
   """
   def __init__(self):
-    Tree.__init__(self, AVLTreeNode)
+    BinaryTree.__init__(self, AVLTreeNode)

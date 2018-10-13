@@ -52,8 +52,6 @@ class FingerSearchBTree(object):
       raise KeyError(
           'key {} is not in B-tree'.format(key))
     self.root = self.root.remove(key)
-    if self.root.n == 0:
-      self.root = self.root.children[0]
 
   def traverse(self):
     """

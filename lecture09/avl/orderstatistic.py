@@ -22,6 +22,10 @@ class OrderStatTreeNode(AVLTreeNode):
     AVLTreeNode.__init__(self, val)
 
   def _create_new(self, val):
+    """
+    Create a new instance of a node
+
+    """
     return OrderStatTreeNode(val)
 
   def rank(self):

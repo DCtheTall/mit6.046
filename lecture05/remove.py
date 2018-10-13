@@ -29,6 +29,7 @@ class BTreeDeleteNode(BTreeInsertNode):
   def _find_key(self, key):
     """
     Find which index a key is stored in a node
+    or which index the child where the key may be
 
     """
     i = 0
@@ -154,7 +155,7 @@ class BTreeDeleteNode(BTreeInsertNode):
       self.keys[i] = pred
       self.children[i] = self.children[i].remove(pred)
       return self
-    if self.children[i + 1] >= self.t:
+    if self.children[i + 1].n >= self.t:
       # If the child to the right of the node has >= t keys, get the
       # immediate successor of key and replace key in self.keys, then
       # delete the successor from the child node recursively
@@ -188,7 +189,8 @@ class BTreeDeleteNode(BTreeInsertNode):
       # we borrow a key from its other children
       self._fill(i)
     if key_in_last_child and i > self.n:
-      self.children[i - 1] = self.children[i - 1].remove(key)
-    else:
-      self.children[i] = self.children[i].remove(key)
+      i -= 1
+    self.children[i] = self.children[i].remove(key)
+    if len(self.children) == 1:  # case when root has only one child
+      return self.children[0]
     return self

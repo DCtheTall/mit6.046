@@ -63,15 +63,16 @@ class BTreeSearchNode(object):
     Print the tree inorder
 
     """
-    if not self.is_leaf() and not root and \
+    # first test that the tree is balanced
+    if not root and \
       (self.n < (self.t - 1) or \
         self.n > ((2 * self.t) - 1)):
           raise Exception
-    res = ''
+    result = ''
     for i in range(self.n):
       if not self.is_leaf():
-        res += self.children[i].traverse(False)
-      res += '{} '.format(self.keys[i])
+        result += self.children[i].traverse(False)
+      result += '{} '.format(self.keys[i])
     if not self.is_leaf():
-      res += self.children[-1].traverse(False)
-    return res
+      result += self.children[-1].traverse(False)
+    return result

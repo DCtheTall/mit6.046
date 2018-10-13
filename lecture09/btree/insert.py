@@ -129,6 +129,3 @@ class BTreeInsertNode(BTreeSearchNode):
       return node
     self._insert_non_full(key)
     return self
-
-
-

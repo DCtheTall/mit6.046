@@ -27,7 +27,7 @@ class BTreeSearchNode(object):
   """
   def __init__(self, t):
     self.t = t
-    self.max_capacity = (2 * t) - 1
+    self.max_capacity = 2 * t
     self.keys = []
     self.children = []
     self.min = None
@@ -46,17 +46,35 @@ class BTreeSearchNode(object):
       return len(self.keys)
     return len(self.children)
 
-  @property
-  def max_capacity(self):
-    """
-    Get the max capacity of the node
-
-    """
-    return (self.t << 1) - int(self.is_leaf())
-
   def is_leaf(self):
     """
     Returns true if the node is a leaf node
 
     """
     return len(self.children) == 0
+
+  def traverse(self, root=True):
+    """
+    Print the tree inorder
+
+    Also test that tree is balanced
+
+    """
+    # first test that the tree is balanced
+    if not root:
+      if self.n < self.t or \
+        self.n > self.max_capacity or \
+        (not self.is_leaf() and len(self.keys)):
+          raise Exception
+    result = ''
+    if self.min > self.max:
+      raise Exception
+    for i in range(self.n):
+      if self.is_leaf():
+        key = self.keys[i]
+        if key < self.min or key > self.max:
+          raise Exception
+        result += '{} '.format(self.keys[i])
+      else:
+        result += self.children[i].traverse(False)
+    return result

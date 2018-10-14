@@ -24,9 +24,20 @@ class FingerSearchBTree(object):
 
   """
 
-  def __init__(self, t):
+  def __init__(self, T, t):
+    self.type = T
     self.root = None
     self.t = t
+
+  def _type_check(self, key):
+    """
+    Type check if the a key is the right type
+    for the tree
+
+    """
+    if not isinstance(key, self.type):
+      raise TypeError(
+        '{} is not the correct type'.format(key))
 
   def search(self, key):
     """
@@ -34,6 +45,7 @@ class FingerSearchBTree(object):
     containing a provided key
 
     """
+    self._type_check(key)
     if self.root is None:
       return None
     return self.root.search(key)
@@ -43,11 +55,17 @@ class FingerSearchBTree(object):
     Insert a provided key into the tree
 
     """
+    self._type_check(key)
     if self.root is None:
       self.root = BTreeNode(self.t)
     self.root = self.root.insert(key)
 
   def remove(self, key):
+    """
+    Remove a key from the tree
+
+    """
+    self._type_check(key)
     if self.root is None:
       raise KeyError(
           'key {} is not in B-tree'.format(key))
@@ -61,3 +79,30 @@ class FingerSearchBTree(object):
     if self.root is None:
       return ''
     return self.root.traverse()
+
+  def finger_search(self, src, dst):
+    """
+    Search for a node, dst, from a key or from a provided node
+
+    This tree obeys the finger-search property, meaning
+    that this takes no more than O(log(abs(rank(x) - rank(y))))
+
+    """
+    if isinstance(src, self.type):
+      src = self.search(src)
+      if src is None:
+        raise KeyError(
+          '{} is not in B-tree'.format(src))
+    if not isinstance(src, BTreeNode):
+      raise TypeError(
+        'Unexcepted 1st argument to finger_search')
+    if src.min <= dst and dst <= src.max:
+      return src.search(dst)
+    if dst < src.min:
+      src = src.left
+    elif dst > src.max:
+      src = src.right
+    src = src.parent
+    if src is None:
+      return None
+    return self.finger_search(src, dst)

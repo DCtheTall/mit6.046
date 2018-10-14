@@ -38,7 +38,7 @@ class BTreeDeleteNode(BTreeInsertNode):
     """
     return BTreeDeleteNode(self.t)
 
-  def _get_max_at_index(self, i):
+  def _get_val_at_index(self, i):
     """
     Get the value at index i to compare to
     a key when finding the index in the
@@ -57,7 +57,7 @@ class BTreeDeleteNode(BTreeInsertNode):
     """
     i = 0
     while i < self.n and \
-      self._get_max_at_index(i) < key:
+      self._get_val_at_index(i) < key:
         i += 1
     return i
 
@@ -221,5 +221,6 @@ class BTreeDeleteNode(BTreeInsertNode):
       i -= 1
     self.children[i] = self.children[i].remove(key)
     if self.n == 1: # case when root has only one child
+      self.children[0].parent = None
       return self.children[0]
     return self

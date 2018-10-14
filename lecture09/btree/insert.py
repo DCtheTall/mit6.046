@@ -80,6 +80,7 @@ class BTreeInsertNode(BTreeSearchNode):
 
     """
     node = self._create_new()
+    node.parent = self
     node.left = child
     child.right = node
 
@@ -122,6 +123,7 @@ class BTreeInsertNode(BTreeSearchNode):
     if self.n == self.max_capacity: # root is full case
       node = self._create_new()
       node.children.append(self)
+      self.parent = node
       node.min = self.min
       node.max = self.max
       node._split_child(self, 0)

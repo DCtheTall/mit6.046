@@ -14,7 +14,7 @@ value starting at a given node
 """
 
 
-from insert import BTreeInsertNode as Node
+from remove import BTreeDeleteNode as BTreeNode
 
 
 class FingerSearchBTree(object):
@@ -44,7 +44,7 @@ class FingerSearchBTree(object):
 
     """
     if self.root is None:
-      self.root = Node(self.t)
+      self.root = BTreeNode(self.t)
     self.root = self.root.insert(key)
 
   def remove(self, key):

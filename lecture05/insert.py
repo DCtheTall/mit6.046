@@ -90,7 +90,7 @@ class BTreeInsertNode(BTreeSearchNode):
       node = self._create_new()
       node.children.append(self)
       node._split_child(self, 0)
-      i = 0 if node.keys[0] < key else 1
+      i = 0 if key < node.keys[0] else 1
       node.children[i]._insert_non_full(key)
       return node
     self._insert_non_full(key)

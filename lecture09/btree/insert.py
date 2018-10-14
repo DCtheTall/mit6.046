@@ -47,9 +47,9 @@ class BTreeInsertNode(BTreeSearchNode):
     If the node is not a leaf, it will insert the key into the proper child
 
     """
-    if key < self.min:
+    if self.min is None or key < self.min:
       self.min = key
-    if key > self.max:
+    if self.max is None or key > self.max:
       self.max = key
 
     i = self.n - 1
@@ -95,7 +95,7 @@ class BTreeInsertNode(BTreeSearchNode):
         node.children.append(child.children.pop())
       node.children.reverse()
       node.min = node.children[0].min
-      node.max = node.children[-1].min
+      node.max = node.children[-1].max
       child.max = child.children[-1].max
     self.children = \
       self.children[:i + 1] + [node] + self.children[i + 1:]
@@ -125,7 +125,7 @@ class BTreeInsertNode(BTreeSearchNode):
       node.min = self.min
       node.max = self.max
       node._split_child(self, 0)
-      node.children[node.children[0].max >= key]._insert_non_full(key)
+      node.children[node.children[0].max < key]._insert_non_full(key)
       return node
     self._insert_non_full(key)
     return self

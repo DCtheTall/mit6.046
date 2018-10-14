@@ -60,20 +60,24 @@ class BTreeSearchNode(object):
     Also test that tree is balanced
 
     """
+    if self.min is None or self.max is None:
+      print self.children
+      raise Exception('No range set')
     # first test that the tree is balanced
     if not root:
       if self.n < self.t or \
         self.n > self.max_capacity or \
         (not self.is_leaf() and len(self.keys)):
-          raise Exception
+          raise Exception('imbalanced')
     result = ''
     if self.min > self.max:
-      raise Exception
+      raise Exception('range incorrect')
     for i in range(self.n):
       if self.is_leaf():
         key = self.keys[i]
         if key < self.min or key > self.max:
-          raise Exception
+          print self.keys, self.min, self.max
+          raise Exception('key outside range')
         result += '{} '.format(self.keys[i])
       else:
         result += self.children[i].traverse(False)

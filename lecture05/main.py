@@ -34,7 +34,7 @@ https://www.geeksforgeeks.org/b-tree-set-1-introduction-2/
 """
 
 
-from remove import BTreeDeleteNode as Node
+from remove import BTreeDeleteNode as BTreeNode
 
 
 class BTree(object):
@@ -63,7 +63,7 @@ class BTree(object):
 
     """
     if self.root is None:
-      self.root = Node(self.t)
+      self.root = BTreeNode(self.t)
     self.root = self.root.insert(key)
 
   def remove(self, key):

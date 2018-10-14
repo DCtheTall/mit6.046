@@ -68,7 +68,7 @@ class BTreeSearchNode(object):
       (self.n < (self.t - 1) or \
         self.n > ((2 * self.t) - 1)):
           raise Exception
-    result = ''
+    result = ' - '
     for i in range(self.n):
       if not self.is_leaf():
         result += self.children[i].traverse(False)

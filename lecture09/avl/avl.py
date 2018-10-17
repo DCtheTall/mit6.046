@@ -148,9 +148,10 @@ class AVLTreeNode(object):
     """
     if self.left is None:
       return 0
-    return 1 + \
-      self.left._get_left_height() + \
-      self.left._get_right_height()
+    return 1 + max(
+      self.left._get_left_height(),
+      self.left._get_right_height(),
+    )
 
   def _get_right_height(self):
     """
@@ -159,9 +160,10 @@ class AVLTreeNode(object):
     """
     if self.right is None:
       return 0
-    return 1 + \
-      self.right._get_left_height() + \
-      self.right._get_right_height()
+    return 1 + max(
+      self.right._get_left_height(),
+      self.right._get_right_height(),
+    )
 
   def _balance(self):
     """
@@ -237,8 +239,8 @@ class BinaryTree(object):
     """
     if self.root is None:
       self.root = self.Node(val)
-      return
-    self.root = self.root.insert(val)
+    else:
+      self.root = self.root.insert(val)
 
   def delete(self, val):
     """
@@ -246,7 +248,7 @@ class BinaryTree(object):
 
     """
     if self.root is None:
-      raise Exception(
+      raise KeyError(
         'Cannot delete value {} from an empty tree'.format(val))
     self.root = self.root.delete(val)
 

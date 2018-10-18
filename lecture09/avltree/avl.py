@@ -69,12 +69,22 @@ class AVLTreeNode(object):
     return self
 
   def _update_min(self):
+    """
+    Update the minimum value when the current
+    min value in the subtree is being deleted
+
+    """
     tmp = self
     while tmp.left is not None:
       tmp = tmp.left
     return tmp.parent.key
 
   def _update_max(self):
+    """
+    Update the maximum value when the current
+    max value in the subtree is being deleted
+
+    """
     tmp = self
     while tmp.right is not None:
       tmp = tmp.right

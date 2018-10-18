@@ -17,6 +17,7 @@ http://www.cs.uu.nl/docs/vakken/ga/slides5b.pdf
 
 
 from avl import AVLTreeNode
+from collections import deque
 
 
 class RangeTreeNode(AVLTreeNode):
@@ -72,25 +73,69 @@ class RangeTree(object):
       return RangeTreeNode(L[0])
     if n == 2:
       node = RangeTreeNode(L[0])
+      node.min = L[0]
+      node.max = L[1]
       node.left = RangeTreeNode(L[0])
+      node.left.min = node.left.max = L[0]
       node.right = RangeTreeNode(L[1])
+      node.right.min = node.right.max = L[1]
       node.left.parent = node.right.parent = node
       return node
+
     mid = n // 2
+    if n == 1:
+      return
     node = RangeTreeNode(L[mid])
-    node.left = RangeTree.build(L[:mid + 1])
-    if node.left is not None:
-      node.left.parent = node
-    node.right = RangeTree.build(L[mid + 1:])
-    if node.right is not None:
-      node.right.parent = node
+    node.min = L[0]
+    node.max = L[-1]
+
+    L_left = L[:mid + 1]
+    node.left = RangeTree.build(L_left)
+    node.left.parent = node
+    node.left.min = L_left[0]
+    node.left.max = L_left[-1]
+
+    L_right = L[mid + 1:]
+    node.right = RangeTree.build(L_right)
+    node.right.parent = node
+    node.right.min = L_right[0]
+    node.right.max = L_right[-1]
+
     return node
 
-  def range_query(self, lo, hi):
+  def _lowest_common_ancestor(self, left, right):
+    """
+    Find the lowest common ancestor
+    of the two leaf nodes at the edge of the
+    range
+
+    """
+    tmp = left
+    while tmp.max < right.key and \
+      tmp.parent is not None:
+        tmp = tmp.parent
+    return tmp
+
+  def range_search(self, lo, hi):
     left = self.root.search(lo)
     right = self.root.search(hi)
-    # TODO find LCA of left and right
-
-
-t = RangeTree(range(0, 100, 2))
-
+    lca = self._lowest_common_ancestor(left, right)
+    nodes = deque()
+    trees = deque()
+    if left.key > lo:
+      nodes.append(left)
+    cur = left
+    while cur != lca:
+      if cur.key > lo and cur.right is not None:
+        nodes.appendleft(cur)
+        trees.appendleft(cur.right)
+      cur = cur.parent
+    if right.key < hi:
+      nodes.append(right)
+    cur = right
+    while cur != lca:
+      if cur.key < hi and cur.left is not None:
+        nodes.append(cur)
+        trees.append(cur.left)
+      cur = cur.parent
+    return (list(nodes), list(trees))

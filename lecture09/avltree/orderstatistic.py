@@ -18,15 +18,15 @@ class OrderStatTreeNode(AVLTreeNode):
   of the TreeNode in avl.py
 
   """
-  def __init__(self, val):
-    AVLTreeNode.__init__(self, val)
+  def __init__(self, key):
+    AVLTreeNode.__init__(self, key)
 
-  def _create_new(self, val):
+  def _create_new(self, key):
     """
     Create a new instance of a node
 
     """
-    return OrderStatTreeNode(val)
+    return OrderStatTreeNode(key)
 
   def rank(self):
     """
@@ -37,8 +37,8 @@ class OrderStatTreeNode(AVLTreeNode):
     tmp = self
     while tmp.parent is not None:
       tmp = tmp.parent
-      if tmp.val < self.val:
-        r += 0 if tmp.left is None else tmp.left.size
+      if tmp.key < self.key:
+        r += 1 + (0 if tmp.left is None else tmp.left.size)
     return r
 
   def select(self, i):
@@ -50,8 +50,12 @@ class OrderStatTreeNode(AVLTreeNode):
     if i == r:
       return self
     if i < r:
+      if self.left is None:
+        return None
       return self.left.select(i)
-    return self.right.select(i - r)
+    if self.right is None:
+      return None
+    return self.right.select(i - r - 1)
 
 
 class OrderStatisticTree(BinaryTree):
@@ -59,24 +63,24 @@ class OrderStatisticTree(BinaryTree):
   Order-statistic tree can do normal
   binary search tree operations in O(log(N)) time
 
-  Can also find the rank of a provided value in the
+  Can also find the rank of a provided keyue in the
   tree
   """
   def __init__(self):
     BinaryTree.__init__(self, OrderStatTreeNode)
 
-  def rank(self, val):
+  def rank(self, key):
     """
-    Select the rank of a value in the OrderStatisticTree
+    Select the rank of a keyue in the OrderStatisticTree
 
     """
     if self.root is None:
-      raise Exception(
-        '{} is not in OrderStatisticTree, tree is empty'.format(val))
-    node = self.search(val)
+      raise KeyError(
+        '{} is not in OrderStatisticTree, tree is empty'.format(key))
+    node = self.search(key)
     if node is None:
       return -1
-    return node.rank(val)
+    return node.rank()
 
   def select(self, i):
     """

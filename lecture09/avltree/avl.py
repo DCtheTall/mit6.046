@@ -15,9 +15,11 @@ class AVLTreeNode(object):
   and parent pointers
 
   """
-  def __init__(self, val):
+  def __init__(self, key):
     self.size = 1
-    self.val = val
+    self.key = key
+    self.min = key
+    self.max = key
     self.left = self.right = self.parent = None
 
   def _decrease_parent_count(self):
@@ -28,16 +30,16 @@ class AVLTreeNode(object):
     """
     if self.parent is not None:
       self.parent.size -= 1
-      self.parent.decrease_parent_count()
+      self.parent._decrease_parent_count()
 
-  def _create_new(self, val):
+  def _create_new(self, key):
     """
     Create a new tree node
 
     """
-    return AVLTreeNode(val)
+    return AVLTreeNode(key)
 
-  def _insert(self, val):
+  def _insert(self, key):
     """
     Binary search tree insert function
     with size augmentation
@@ -45,61 +47,95 @@ class AVLTreeNode(object):
     Complexity: O(log(N)) where N is number of nodes in the tree
 
     """
-    if val == self.val:
+    if self.min > key:
+      self.min = key
+    if self.max < key:
+      self.max = key
+    if key == self.key:
       return self
     self.size += 1
-    if val < self.val:
+    if key < self.key:
       if self.left is None:
-        self.left = self._create_new(val)
+        self.left = self._create_new(key)
         self.left.parent = self
         return self
-      self.left = self.left._insert(val)
+      self.left = self.left._insert(key)
     else:
       if self.right is None:
-        self.right = self._create_new(val)
+        self.right = self._create_new(key)
         self.right.parent = self
         return self
-      self.right = self.right._insert(val)
+      self.right = self.right._insert(key)
     return self
 
-  def _delete(self, val):
+  def _update_min(self):
+    tmp = self
+    while tmp.left is not None:
+      tmp = tmp.left
+    return tmp.parent.key
+
+  def _update_max(self):
+    tmp = self
+    while tmp.right is not None:
+      tmp = tmp.right
+    return tmp.parent.key
+
+  def _get_successor(self):
     """
-    Delete a value from a BST
+    Get this node's successor
+
+    """
+    tmp = self.right
+    while tmp.left:
+      tmp = tmp.left
+    return tmp
+
+  def _delete(self, key):
+    """
+    Delete a keyue from a BST
 
     Complexity: O(log(N)) where N is number of nodes in the tree
 
     """
-    if val == self.val:
+    if key == self.key:
       self._decrease_parent_count()
+
       if self.size == 1:  # leaf case
         return None
+
       if self.left is None:  # no left child case
         if self.parent is None:
           self.right.parent = None
           return self.right  # root case: right child is new root
         self.right.parent = self.parent
         return self.right
+
       if self.right is None:  # no right child case
         if self.parent is None:
           self.left.parent = None
           return self.left  # root case: left child is new root
         self.left.parent = self.parent
         return self.left
-      # two children case: swap the value of this node with its successor then
+
+      # two children case: swap the keyue of this node with its successor then
       # recursively call delete on the right subtree
-      tmp = self.right
-      while tmp.left:
-        tmp = tmp.left
-      self.val, tmp.val = tmp.val, self.val
+      tmp = self._get_successor()
+      self.key, tmp.key = tmp.key, self.key
       if tmp == self.right:
-        self.right = tmp._delete(val)
+        self.right = tmp._delete(key)
       else:
-        tmp.parent.left = tmp._delete(val)
+        tmp.parent.left = tmp._delete(key)
       return self
-    if val < self.val and self.left is not None:
-      self.left = self.left._delete(val)
-    elif val > self.val and self.right is not None:
-      self.right = self.right._delete(val)
+
+    if key == self.min:
+      self._update_min()
+    if key == self.max:
+      self._update_max()
+
+    if key < self.key and self.left is not None:
+      self.left = self.left._delete(key)
+    elif key > self.key and self.right is not None:
+      self.right = self.right._delete(key)
     return self
 
   def _rotate_left(self):
@@ -182,34 +218,51 @@ class AVLTreeNode(object):
       return self._rotate_left()
     return self
 
-  def search(self, val):
+  def search(self, key):
     """
     Search the binary tree for a node containing
-    the provided value
+    the provided keyue
 
     """
-    if self.val == val:
+    if self.key == key:
       return self
-    if self.val > val:
-      return None if self.left is None else self.left.search(val)
-    return None if self.right is None else self.right.search(val)
+    if self.key > key:
+      return None if self.left is None else self.left.search(key)
+    return None if self.right is None else self.right.search(key)
 
 
-  def insert(self, val):
+  def insert(self, key):
     """
-    Insert a val into the subtree rooted at this node
+    Insert a key into the subtree rooted at this node
 
     """
-    node = self._insert(val)
+    node = self._insert(key)
     return node._balance()
 
-  def delete(self, val):
+  def delete(self, key):
     """
-    Delete a val from the subtree rooted at this node
+    Delete a key from the subtree rooted at this node
 
     """
-    node = self._delete(val)
+    node = self._delete(key)
     return node._balance()
+
+  def traverse(self):
+    """
+    Return all keys inorder
+    in the subtree rooted at the current node
+
+    """
+    if self.key < self.min or self.key > self.max:
+      raise KeyError(
+          'AVLTreeNode has a key out of range')
+    res = ''
+    if self.left is not None:
+      res += self.left.traverse()
+    res += str(self.key) + ' '
+    if self.right is not None:
+      res += self.right.traverse()
+    return res
 
 
 class BinaryTree(object):
@@ -222,35 +275,44 @@ class BinaryTree(object):
     self.Node = Node
     self.root = None
 
-  def search(self, val):
+  def search(self, key):
     """
     Search the tree for the node
-    containing the provided value
+    containing the provided keyue
 
     """
     if self.root is None:
       return None
-    return self.root.search(val)
+    return self.root.search(key)
 
-  def insert(self, val):
+  def insert(self, key):
     """
-    Insert a value into the tree
+    Insert a keyue into the tree
 
     """
     if self.root is None:
-      self.root = self.Node(val)
+      self.root = self.Node(key)
     else:
-      self.root = self.root.insert(val)
+      self.root = self.root.insert(key)
 
-  def delete(self, val):
+  def delete(self, key):
     """
-    Delete a value in the tree
+    Delete a keyue in the tree
 
     """
     if self.root is None:
       raise KeyError(
-        'Cannot delete value {} from an empty tree'.format(val))
-    self.root = self.root.delete(val)
+        'Cannot delete keyue {} from an empty tree'.format(key))
+    self.root = self.root.delete(key)
+
+  def traverse(self):
+    """
+    Traverse the tree and return all keys as strings
+
+    """
+    if self.root is None:
+      return ''
+    return self.root.traverse()
 
 
 class AVLTree(BinaryTree):

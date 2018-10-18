@@ -4,7 +4,7 @@
 
 Range trees are data structures optimized
 to query for all nodes and subtrees with
-keys in a provided interval in logarithmic
+keys in a provided interkey in logarithmic
 time
 
 This is an example of a 1-D range tree
@@ -25,28 +25,28 @@ class RangeTreeNode(AVLTreeNode):
   but has a modified search method
 
   """
-  def __init__(self, val):
-    AVLTreeNode.__init__(self, val)
+  def __init__(self, key):
+    AVLTreeNode.__init__(self, key)
 
-  def search(self, val):
+  def search(self, key):
     """
     Search function is modified for range queries
-    so that if a value is not in the tree, it'll
+    so that if a keyue is not in the tree, it'll
     return the leaf node whose subtree would contain
-    the value being queried
+    the keyue being queried
 
     """
-    if self.val == val and self.left is None:
+    if self.key == key and self.left is None:
       return self
-    if self.val == val:
-      return self.left.search(val)
-    if val < self.val and self.left is None:
+    if self.key == key:
+      return self.left.search(key)
+    if key < self.key and self.left is None:
       return self
-    if val < self.val:
-      return self.left.search(val)
-    if val > self.val and self.right is None:
+    if key < self.key:
+      return self.left.search(key)
+    if key > self.key and self.right is None:
       return self
-    return self.right.search(val)
+    return self.right.search(key)
 
 
 class RangeTree(object):
@@ -62,7 +62,7 @@ class RangeTree(object):
   def build(L):
     """
     Construct a range tree structure from a list
-    of values L
+    of keyues L
 
     """
     n = len(L)

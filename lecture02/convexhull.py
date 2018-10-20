@@ -121,6 +121,11 @@ def brute_force_convex_hull(S):
   for finding the convex hull of
   a set of points
 
+  The idea is you check for points where every other
+  point is only on one side of the line defined
+  by the chosen two. This indicates these two points belong
+  to an edge of the convex hull
+
   complexity: O(n ** 3)
 
   """
@@ -156,6 +161,10 @@ def divide_and_conquer_convex_hull(S):
   function that operates on a list of
   points (tuples of x and y coords) assuming
   that they are sorted by their x coordinate
+
+  Complexity: O(n * (log(n) ** 2))
+
+  Since it takes O(n * log(n)) work over O(log(n)) recursions
 
   """
   n = len(S)

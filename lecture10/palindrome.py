@@ -1,6 +1,8 @@
 """
 Longest Palindromic Subsequence
 -------------------------------
+Problem:
+
 Given a string, find the longest subsequence
 of that string that is a palindrome
 
@@ -10,15 +12,22 @@ The longest palindromic subsequence of "underqualified" is "deified"
 
 The longest palindromic subsequence of "turboventilator" is "rotator"
 
+This program provides 2 functions which
+
 """
 
 
-def longest_palindromic_subseq_length(dp, S, i, j):
+def dp_palindrome_length(dp, S, i, j):
   """
-  Get the length of the longest palindromic sequence
+  Recursive function for finding the length
+  of the longest palindromic sequence
   in a string
 
   This is the algorithm covered in the lecture
+
+  It uses memoization to improve performance,
+  dp "dynamic programming" is a Python dict
+  containing previously computed values
 
   """
   if i == j:
@@ -30,19 +39,30 @@ def longest_palindromic_subseq_length(dp, S, i, j):
       dp[(i, j)] = 2
     else:
       dp[(i, j)] = 2 + \
-        longest_palindromic_subseq_length(dp, S, i + 1, j - 1)
+        dp_palindrome_length(dp, S, i + 1, j - 1)
   else:
     dp[(i, j)] = \
       max(
-        longest_palindromic_subseq_length(dp, S, i + 1, j),
-        longest_palindromic_subseq_length(dp, S, i, j - 1))
+        dp_palindrome_length(dp, S, i + 1, j),
+        dp_palindrome_length(dp, S, i, j - 1))
   return dp[(i, j)]
 
 
-def longest_palindromic_subseq(dp, S, i, j):
+def longest_palindromic_subsequence_length(S):
   """
-  Get the longest palindromic subsequence from a string
-  using a modified version of the algorithm above
+  Find the length of the longest palindromic
+  subsequence of string S
+
+  """
+  n = len(S)
+  return dp_palindrome_length(dict(), S, 0, n - 1)
+
+
+def dp_longest_palindrome(dp, S, i, j):
+  """
+  Recursive function for finding the longest palindromic
+  subsequence from a string using a modified version
+  of the algorithm above
 
   """
   if i == j:
@@ -55,10 +75,20 @@ def longest_palindromic_subseq(dp, S, i, j):
     else:
       dp[(i, j)] = \
         S[i] + \
-        longest_palindromic_subseq(dp, S, i + 1, j - 1) + \
+        dp_longest_palindrome(dp, S, i + 1, j - 1) + \
         S[i]
   else:
-    s_i = longest_palindromic_subseq(dp, S, i + 1, j)
-    s_j = longest_palindromic_subseq(dp, S, i, j - 1)
+    s_i = dp_longest_palindrome(dp, S, i + 1, j)
+    s_j = dp_longest_palindrome(dp, S, i, j - 1)
     dp[(i, j)] = s_i if len(s_i) > len(s_j) else s_j
   return dp[(i, j)]
+
+
+def longest_palindromic_subsequence(S):
+  """
+  Find the longest palindromic subsequence
+  of string S
+
+  """
+  n = len(S)
+  return dp_longest_palindrome(dict(), S, 0, n - 1)

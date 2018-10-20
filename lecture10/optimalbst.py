@@ -10,7 +10,7 @@ We want to construct the "optimal" binary search tree where
 the cost function:
 
 e(T) = sum([
-  depth(k_i in T), w_i
+  depth(k_i in T) * w_i
   for i in range(n)
 ])
 
@@ -185,7 +185,7 @@ def get_weight_and_tree(func, dp, keys, weights, i, j, r):
   given a range i and j
 
   The first argment is the recursive function
-  for defined below for finding the optimal BST
+  defined below for finding the optimal BST
   given the cost function above
 
   """
@@ -205,6 +205,9 @@ def dp_optimal_bst(dp, keys, weights, i, j):
 
   It returns a tuple with the lowest possible
   cost and the best BST
+
+  It uses memoization to speed up performance
+  with a Python dictionary named dp "dynamic programming"
 
   """
   if (i, j) in dp:

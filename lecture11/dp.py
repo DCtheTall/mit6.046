@@ -27,18 +27,21 @@ def dp_all_pairs_shortest_paths(graph):
     raise TypeError(
       'dp_all_pairs_shortest_paths must be called with a Graph instance')
   dp = dict()
+  parents = dict()
   for u in graph.vertices:
     for v in graph.vertices:
       dp[(u, v)] = graph.get_edge_weight(u, v)
+      parents[(u, v)] = None
   for _ in range(graph.v - 1):
     for u in graph.vertices:
       for v in graph.vertices:
         for x in graph.vertices:
           if dp[(u, v)] > dp[(u, x)] + dp[(x, v)]:
             dp[(u, v)] = dp[(u, x)] + dp[(x, v)]
+            parents[(u, v)] = x
   for u in graph.vertices:
     for v in graph.vertices:
       for x in graph.vertices:
         if dp[(u, v)] > dp[(u, x)] + dp[(x, v)]:
           raise Exception('Negative weight cycle')
-  return dp
+  return (dp, parents)

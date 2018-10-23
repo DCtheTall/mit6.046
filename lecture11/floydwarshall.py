@@ -77,7 +77,7 @@ def bellman_ford(graph):
   return result
 
 
-def djikstra(graph, h, src, result):
+def djikstra(graph, h, src, costs, parents):
   """
   Djikstra's algorithm finding the shortest path in a
   graph (V, E, w) where
@@ -98,16 +98,17 @@ def djikstra(graph, h, src, result):
   visited = set()
   while unfinished:
     u = min(unfinished, key=unfinished.get)
-    result[(src, u)] = unfinished[u]
+    costs[(src, u)] = unfinished[u]
     visited.add(u)
     del unfinished[u]
     for v in graph.vertices:
       if v in visited:
         continue
-      if (unfinished[v] + h[u] - h[v]) > \
-        (result[(src, u)] + graph.get_edge_weight(u, v) + h[u] - h[v]):
+      if (unfinished[v] + h[src] - h[v]) > \
+        (costs[(src, u)] + graph.get_edge_weight(u, v) + h[src] - h[v]):
           unfinished[v] = \
-            result[(src, u)] + graph.get_edge_weight(u, v)
+            costs[(src, u)] + graph.get_edge_weight(u, v)
+          parents[(src, v)] = u
 
 
 def floyd_warshall(graph):
@@ -137,10 +138,12 @@ def floyd_warshall(graph):
     raise TypeError(
       'bellman_ford must be called with an instance of Graph')
   h = bellman_ford(graph)
-  result = dict()
+  costs = dict()
+  parents = dict()
   for u in graph.vertices:
     for v in graph.vertices:
-      result[(u, v)] = 0 if u == v else float('inf')
+      costs[(u, v)] = 0 if u == v else float('inf')
+      parents[(u, v)] = None
   for src in graph.vertices:
-    djikstra(graph, h, src, result)
-  return result
+    djikstra(graph, h, src, costs, parents)
+  return (costs, parents)

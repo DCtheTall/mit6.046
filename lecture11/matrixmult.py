@@ -17,8 +17,31 @@ def multiply_adjacency_matrices(vertices, A, B):
   multiply: add values together
   add: take the minimum value
 
+  Since normal multiplication for n x n matrices looks like:
+
+  C[(i, j]] = sum([
+    A[(i, k)] * B[(k, j)]
+    for k in range(n)
+  ])
+
+  With our new definition of addition and multiplication,
+  the operation becomes:
+
+  C[(i, j)] = min([
+    A[(i, k)] + B[(k, j)]
+    for k in range(n)
+  ])
+
+  This new operation is the same as relaxing edges
+  in the 1st DP approach.
+
   These operations with matrices form a semiring
+
   https://en.wikipedia.org/wiki/Semiring
+
+  which is a mathematical structure like a ring but
+  without the property of an additive inverse
+  (min is not invertible).
 
   Complexity: O(v ** 3)
 
@@ -41,7 +64,7 @@ def matrix_multiply_all_pairs_shortest_paths(graph):
   Complexity: O((v ** 3) * log(v))
 
   Each matrix multiply is O(v ** 3) and by using the repeated
-  squares method, you only do O(log(v)) multiplications.
+  squaring method you only perform O(log(v)) multiplications.
 
   This method beats the one in dp.py but is slower than the
   Floyd-Warshall algorithm
@@ -53,7 +76,9 @@ def matrix_multiply_all_pairs_shortest_paths(graph):
   i = 0
   dp = {0: graph.edges}
   while (1 << i) <= (graph.v - 1):
-    dp[i + 1] = multiply_adjacency_matrices(graph.vertices, dp[i], dp[i])
+    dp[i + 1] = \
+      multiply_adjacency_matrices(
+        graph.vertices, dp[i], dp[i])
     i += 1
   result = {(u, v): 0 for u, v in graph.edges}
   while i >= 0:

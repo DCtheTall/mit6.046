@@ -1,36 +1,22 @@
 """
-Floyd-Warshall
-All-Pairs Shortest Path Algorithm
----------------------------------
-Floyd-Warshall in summary is creating a way
-to run Djikstra's algorithm on any arbitrary graph
-that does not have negative weight cycles.
+Floyd-Warshall All-Pairs
+Shortest Path Algorithm
+-----------------------
 
-It does so by finding a function
+This is a method to find the shortest paths between
+all pairs of vertices in a graph (V, E, w)
+using dynamic programming.
 
-h: V -> R
+The recursion to get the shortest paths d[(u, v)]
+is given by:
 
-where forall u, v in V
-
-w(u, v) + h(u) - h(v) >= 0
-
-This is achieved by running Bellman-Ford once
-on a non-existent source vertex s which we treat
-as being connected to every v in V with w(s, v) = 0
-
-The resulting function h(u) = d(s, u) where d(s, u) is the
-shortest path from s to u.
-
-The condition for h is met because
-
-w(u, v) + d(s, u) - d(s, v) >= 0
-
-is equivalent to
-
-d(s, v) <= d(s, u) + w(u, v)
-
-which is true if d(s, v) is the shortest path from
-the source vertex to v
+for k in V:
+  for u, v in E:
+    d[(u, v)] =
+      min([
+        d[(u, v)],
+        d[(u, k)] + d[(k, v)],
+      ])
 
 """
 
@@ -38,112 +24,35 @@ the source vertex to v
 from graph import Graph
 
 
-def bellman_ford(graph):
-  """
-  Bellman-Ford single-source
-  shortest path algorithm
-
-  The algorithm is augmented for Floyd-Warshall,
-  which adds a source vertex connected to every
-  other vertex with a weight of 0
-
-  Given a graph (V, E, w)
-
-  The point of this is to define a function
-
-  h: V -> R
-
-  where forall u, v in V
-
-  w(u, v) + h(u) - h(v) >= 0
-
-  This function allows us to use Djikstra's shortest
-  path algorithm from each vertex
-
-  Bellman-Ford also handles detecting any
-  negative weight cycles
-
-  """
-  result = {u: 0 for u in graph.vertices}
-  for _ in range(graph.v - 1):
-    for u in graph.vertices:
-      for v in graph.vertices:
-        if result[u] > result[v] + graph.get_edge_weight(v, u):
-          result[u] = result[v] + graph.get_edge_weight(v, u)
-  for u in graph.vertices:
-    for v in graph.vertices:
-      if result[u] > result[v] + graph.get_edge_weight(v, u):
-        raise Exception('Negative weight cycle')
-  return result
-
-
-def djikstra(graph, h, src, costs, parents):
-  """
-  Djikstra's algorithm finding the shortest path in a
-  graph (V, E, w) where
-
-  w(u, v) + h[u] - h[v] >= 0
-
-  It finds the shortest paths to each vertex from
-  a given source vertex src and records it in the
-  result of the Floyd-Warshall implementation
-  below
-
-  """
-  unfinished = {
-    u: float('inf')
-    for u in graph.vertices
-  }
-  unfinished[src] = 0
-  visited = set()
-  while unfinished:
-    u = min(unfinished, key=unfinished.get)
-    costs[(src, u)] = unfinished[u]
-    visited.add(u)
-    del unfinished[u]
-    for v in graph.vertices:
-      if v in visited:
-        continue
-      if (unfinished[v] + h[src] - h[v]) > \
-        (costs[(src, u)] + graph.get_edge_weight(u, v) + h[src] - h[v]):
-          unfinished[v] = \
-            costs[(src, u)] + graph.get_edge_weight(u, v)
-          parents[(src, v)] = u
-
-
 def floyd_warshall(graph):
   """
-  Floyd-Warshall algorithm for finding the shortest paths
-  between all pairs of points in a graph (V, E, w).
+  Floyd-Warshall Python implementation
 
-  It uses Bellman-Ford's algorithm to find a function
-
-  h: V -> R
-
-  where forall u, v in V:
-
-  w(u, v) + h[u] - h[v] >= 0
-
-  Which allows us to run Djikstra's algorithm on each vertex
+  This is a recursive method for doing the
+  same computation as the matrix multiplication
+  but in a more efficient way.
 
   Complexity: O(v ** 3)
-
-  on a dense graph which is the best performance known
-  without special matrix multiplication algorithms on
-  different formulations of the matrix multiplication
-  method
 
   """
   if not isinstance(graph, Graph):
     raise TypeError(
-      'bellman_ford must be called with an instance of Graph')
-  h = bellman_ford(graph)
-  costs = dict()
-  parents = dict()
-  for u in graph.vertices:
-    for v in graph.vertices:
-      costs[(u, v)] = 0 if u == v else float('inf')
-      parents[(u, v)] = None
-  for src in graph.vertices:
-    djikstra(graph, h, src, costs, parents)
+      'floyd_warshall expected a Graph instance')
+  costs = dict(graph.edges)
+  parents = {
+    (u, v): u
+    for u, v in costs
+  }
+  for k in graph.vertices:
+    for u in graph.vertices:
+      for v in graph.vertices:
+        if costs[(u, v)] > (costs[(u, k)] + costs[(k, v)]):
+          costs[(u, v)] = costs[(u, k)] + costs[(k, v)]
+          parents[(u, v)] = k
+  for k in graph.vertices:
+    for u in graph.vertices:
+      for k in graph.vertices:
+        if costs[(u, v)] > (costs[(u, k)] + costs[(k, v)]):
+          raise Exception('Negative weight cycle')
   return (costs, parents)
+

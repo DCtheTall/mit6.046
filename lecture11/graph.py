@@ -27,7 +27,7 @@ class Graph(object):
 
     """
     if u not in self.vertices or \
-            v not in self.vertices:
+      v not in self.vertices:
         raise KeyError('Vertices not in the graph')
     return self.edges[(u, v)]
 
@@ -37,6 +37,6 @@ class Graph(object):
 
     """
     if u not in self.vertices or \
-            v not in self.vertices:
+      v not in self.vertices:
         raise KeyError('Vertices not in the graph')
     self.edges[(u, v)] = weight

@@ -10,8 +10,23 @@ a connected, undirected, weighted graph.
 
 
 from graph import Graph
-from treenode import TreeNode
 from random import sample
+
+
+class TreeNode(object):
+  """
+  TreeNode class
+
+  property: {any hashable type} key
+  property: {TreeNode} parent
+  property: {list(TreeNode)} children
+
+  """
+
+  def __init__(self, key):
+    self.key = key
+    self.parent = None
+    self.children = []
 
 
 class PriorityQueue(object):

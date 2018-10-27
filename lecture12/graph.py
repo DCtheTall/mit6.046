@@ -30,22 +30,24 @@ class Graph(object):
       raise TypeError(
         'Graph must include at least one edge')
     self.vertices = set()
-    self.edges = dict()
+    self.adj = dict()
+    self.weights = dict()
     for u, v in edge_weights:
       # No directed edges, each pair of vertices can only appear once
-      if u in self.edges and v in self.edges[u]:
+      if (v, u) in edge_weights:
         raise TypeError(
           'Graph can include each pair of vertices once')
+      self.weights[(u, v)] = self.weights[(v, u)] = edge_weights[(u, v)]
       self.vertices.add(u)
       self.vertices.add(v)
-      if u in self.edges:
-        self.edges[u][v] = edge_weights[(u, v)]
-      else:
-        self.edges[u] = {v: edge_weights[(u, v)]}
-      if v in self.edges:
-        self.edges[v][u] = edge_weights[(u, v)]
-      else:
-        self.edges[v] = {u: edge_weights[(u, v)]}
+      try:
+        self.adj[u].add(v)
+      except:
+        self.adj[u] = {v}
+      try:
+        self.adj[v].add(u)
+      except:
+        self.adj[v] = {u}
       # BFS to check connectedness
       visited = set()
       frontier = [u]
@@ -55,9 +57,8 @@ class Graph(object):
           if u in visited:
             continue
           visited.add(u)
-          for v in self.edges[u]:
+          for v in self.adj[u]:
             new_frontier.append(v)
         frontier = new_frontier
-      if visited != self.vertices:
-        raise TypeError(
-          'Graph must be connected')
+      if visited.difference(self.vertices):
+        raise TypeError('Graph must be connected')

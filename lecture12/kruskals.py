@@ -37,8 +37,12 @@ def kruskals_algorithm_mst(graph):
   and is generally considered a constant
 
   The sort in this case is O(e * log(e)) but
-  if you use counting sort or radix sort it can
+  if you can use counting sort or radix sort it can
   be reduced to O(e)
+
+  This algorithm makes its greedy choice starting with
+  the globally minimum weighted edge, and then continues
+  selecting edges until it forms a spanning tree.
 
   """
   if not isinstance(graph, Graph):

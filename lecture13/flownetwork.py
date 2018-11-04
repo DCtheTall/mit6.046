@@ -83,6 +83,11 @@ class FlowNetwork(object):
     from the source to the sink exists and
     the parent pointers for that path
 
+    Complexity: O(V + E_f) (BFS)
+
+    where V is the set of vertices in the flow/residual network
+    and E_f is the set of edges in the residual network
+
     """
     frontier = [self.src] # queue
     parents = {self.src: None}

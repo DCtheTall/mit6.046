@@ -23,6 +23,21 @@ from flownetwork import FlowNetwork
 
 def ford_fulkerson(network):
   """
+  Ford-Fulkerson algorithm
+
+  Below is an implementation of the algorithm
+  described above using the FlowNetwork class
+  defined in flownetwork.py
+
+  This algorithm does not assume that the flows
+  are integral values, and traverses each path
+  it finds from the source to the sink in the
+  residual network for the minimum available
+  residual capacity. An insight found by studying
+  the code provided here:
+
+  https://www.geeksforgeeks.org/ford-fulkerson-algorithm-for-maximum-flow-problem/
+
   """
   if not isinstance(network, FlowNetwork):
     raise TypeError(

@@ -16,7 +16,6 @@ c(u, v) = 0
 f(u, v) is the flow through the edge, a non-negative quantity which
 represents the traffic through that edge.
 
-
 f(u, v) obey the following properties:
 
 f(v, v) = 0 forall v in V
@@ -39,8 +38,6 @@ c_f(u, v) = c(u, v) - f(u, v)
 
 Note that if c(v, u) is 0 then c_f(v, u) = -f(v, u) = f(u, v).
 
----
-
 Below is a class that will be used as a data structure representing
 a residual flow network which will be used for finding the maximum
 flow allowable through a flow network.
@@ -48,7 +45,7 @@ flow allowable through a flow network.
 """
 
 
-class ResidualNetwork(object):
+class FlowNetwork(object):
   """
   ResidualNetwork class represents the
   residual network of a given a flow network
@@ -75,11 +72,11 @@ class ResidualNetwork(object):
         self.adj[v].add(u)
       except:
         self.adj[v] = {u}
-      self.flows[(v, u)] = 0
+      self.flows[(u, v)] = 0
       self.vertices.add(u)
       self.vertices.add(v)
 
-  def bfs(self):
+  def residual_network_bfs(self):
     """
     Perform a BFS on the residual netowrk
     and return a tuple containing if a path
@@ -87,19 +84,26 @@ class ResidualNetwork(object):
     the parent pointers for that path
 
     """
-    frontier = [self.src]
+    frontier = [self.src] # queue
     parents = {self.src: None}
     while frontier:
       new_frontier = []
       for u in frontier:
         for v in self.adj:
+          if v in parents:
+            continue
           if (u, v) in self.residual_capacities and \
             self.residual_capacities[(u, v)] > 0:
               parents[v] = u
               new_frontier.append(v)
+          # recall residual capacity networks have flow edges
+          # always >= 0 and the edge direction is against the
+          # actual direction of the flow
           elif (v, u) in self.flows and \
             self.flows[(v, u)] > 0:
               parents[v] = u
               new_frontier.append(v)
       frontier = new_frontier
     return (self.sink in parents, parents)
+
+

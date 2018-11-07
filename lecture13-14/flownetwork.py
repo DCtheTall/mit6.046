@@ -94,6 +94,8 @@ class FlowNetwork(object):
     while frontier:
       new_frontier = []
       for u in frontier:
+        if u == self.sink:
+          return (True, parents)
         for v in self.adj:
           if v in parents:
             continue
@@ -109,6 +111,6 @@ class FlowNetwork(object):
               parents[v] = u
               new_frontier.append(v)
       frontier = new_frontier
-    return (self.sink in parents, parents)
+    return (False, parents)
 
 

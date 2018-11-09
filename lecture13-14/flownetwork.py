@@ -51,9 +51,7 @@ class FlowNetwork(object):
   residual network of a given a flow network
   using a graph with adjacency lists keeping
   track of residual capacity going through each
-  node and
-
-  The constructor expects
+  edge and the flow through each edge
 
   """
   def __init__(self, src, sink, capacities):

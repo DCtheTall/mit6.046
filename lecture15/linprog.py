@@ -49,6 +49,7 @@ are provided from the lecture.
 
 from scipy.optimize import linprog
 from flownetwork import FlowNetwork
+from graph import Graph
 
 
 def political_advertising_example():
@@ -77,9 +78,10 @@ def political_advertising_example():
   A_ub = \
       ((2, -8, 0, -10),
        (-5, -2, 0, 0),
-          (-3, 5, -10, -2))
+       (-3, 5, -10, -2))
   b_ub = (-500000, -100000, -25000)
-  return linprog(c, A_ub, b_ub, method='interior-point')
+  return linprog(
+    c, A_ub, b_ub, method='interior-point')
 
 
 def maximum_flow_example():
@@ -107,6 +109,10 @@ def maximum_flow_example():
 
   scipy's linprog is able to get the correct answer
   we get using Ford-Fulkerson (ignoring floating point error).
+
+  This example returns the negative of the max flow since
+  linprog tries to find minimums. Multiplying the result by
+  -1 will reveal the actual max flow.
 
   """
   network = FlowNetwork('s', 't', {
@@ -153,6 +159,92 @@ def maximum_flow_example():
     c, A_ub, b_ub, A_eq, b_eq, method='interior-point')
 
 
+def shortest_path_example():
+  """
+  Single-source shortest path example
+
+  This function is an implementation of using
+  linear programming to solve the single source
+  shortest path problem for a directed graph
+  G(V, E) with non-negative edge weights given
+  in the example here:
+
+  https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
+
+  An example where you can verify the result of the
+  linear program and compare it to the result from
+  running Djikstra's on the same graph. The graph in
+  this example is undirected, but the directions can
+  be guessed so that the result is the same as Djikstra's.
+
+  In this case the objective function is
+
+  max(sum(d[u] for u in V))
+
+  where d[u] is the minimum cost to get to the vertex u
+  from the source vertex.
+
+  The upper bound constrains are given by the triangle
+  inequality, i.e.
+
+  d[v] - d[u] <= w(u, v) for u, v in E
+
+  and is given by the matrix A_ub and the vector b_ub.
+
+  The equality constraint comes from the fact that
+
+  sum([d[s] for e in E]) = 0,
+
+  i.e. the shortest path from the source to itself
+  is always 0.
+
+  """
+  graph = Graph({
+    (0, 1): 4,
+    (0, 7): 8,
+    (1, 2): 8,
+    (1, 7): 11,
+    (2, 3): 7,
+    (2, 5): 4,
+    (2, 8): 2,
+    (3, 4): 9,
+    (3, 5): 14,
+    (5, 4): 10,
+    (6, 5): 2,
+    (7, 6): 1,
+    (6, 8): 6,
+    (7, 8): 7,
+  })
+  src = 0
+  V_sorted = sorted(graph.vertices)
+  E_sorted = sorted(graph.edge_weights.keys())
+  v = len(V_sorted)
+  e = len(E_sorted)
+  c = [-1] * v
+  c[0] = 0
+  A_ub = [
+    [
+      {u: -1, v: 1}[w] if w in (u, v) else 0
+      for w in V_sorted
+    ]
+    for u, v in E_sorted
+  ]
+  b_ub = [
+    graph.edge_weights[(u, v)]
+    for u, v in E_sorted
+  ]
+  A_eq = [
+    [
+      1 if w == src else 0
+      for w in V_sorted
+    ]
+    for u, v in E_sorted
+  ]
+  b_eq = [0] * e
+  return linprog(
+      c, A_ub, b_ub, A_eq, b_eq, method='interior-point')
+
 if __name__ == '__main__':
-  print political_advertising_example()
-  print maximum_flow_example()
+  # print political_advertising_example()
+  # print maximum_flow_example()
+  print shortest_path_example()

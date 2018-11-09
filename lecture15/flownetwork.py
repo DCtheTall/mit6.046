@@ -56,6 +56,7 @@ class FlowNetwork(object):
   The constructor expects
 
   """
+
   def __init__(self, src, sink, capacities):
     self.src = src
     self.sink = sink
@@ -89,7 +90,7 @@ class FlowNetwork(object):
     and E_f is the set of edges in the residual network
 
     """
-    frontier = [self.src] # queue
+    frontier = [self.src]  # queue
     parents = {self.src: None}
     while frontier:
       new_frontier = []
@@ -100,14 +101,14 @@ class FlowNetwork(object):
           if v in parents:
             continue
           if (u, v) in self.residual_capacities and \
-            self.residual_capacities[(u, v)] > 0:
+                  self.residual_capacities[(u, v)] > 0:
               parents[v] = u
               new_frontier.append(v)
           # recall residual capacity networks have flow edges
           # always >= 0 and the edge direction is against the
           # actual direction of the flow
           elif (v, u) in self.flows and \
-            self.flows[(v, u)] > 0:
+                  self.flows[(v, u)] > 0:
               parents[v] = u
               new_frontier.append(v)
       frontier = new_frontier

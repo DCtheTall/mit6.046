@@ -246,5 +246,5 @@ def shortest_path_example():
 
 if __name__ == '__main__':
   # print political_advertising_example()
-  # print maximum_flow_example()
-  print shortest_path_example()
+  print maximum_flow_example()
+  # print shortest_path_example()

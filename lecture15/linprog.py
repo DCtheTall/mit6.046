@@ -244,7 +244,9 @@ def shortest_path_example():
   return linprog(
       c, A_ub, b_ub, A_eq, b_eq, method='interior-point')
 
+
 if __name__ == '__main__':
   # print political_advertising_example()
-  print maximum_flow_example()
+  # print maximum_flow_example()
   # print shortest_path_example()
+  pass

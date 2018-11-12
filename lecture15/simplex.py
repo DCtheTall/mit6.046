@@ -33,10 +33,26 @@ z = sum(c[i] * x[i] for i in range(n)).
 
 In order to do so, we define the "basic" variables
 
-x_j = b_ub[j] - sum(A_ub[j][i] * x[i] for i in range(n))
+x_b = [
+  b_ub[j] - sum(A_ub[j][i] * x[i] for i in range(n))
+  for j in range(m)
+]
 
-for each j in 0, 1, ..., m - 1. From the provided constraints,
-we see that each x_j >= 0.
+From the provided constraints, we see that each x[j] >= 0.
+
+Let X_b be an m x m diagonal matrix where each element in the
+diagonal is
+
+X_b[i][i] = x_b[i].
+
+This allows us to construct the initial tableau
+
+| -c^T  0_m^T     1     0 |
+| A_ub    X_b   0_m  b_ub |
+
+where 0_m is the 0 vector in m dimensional space.
+The resulting tableau is stored as a 2 dimensional
+matrix using the SimplexTableau class.
 
 """
 
@@ -85,5 +101,18 @@ class SimplexTableau(object):
           else:
             self.tableau[i][j] = b_ub[i - 1]
 
+  def get_objective_metric(self):
+    """
+    Get the current value of the objective function
+    from the tableau's current state
 
+    """
+    return self.tableau[0][-1]
 
+  def pivot_step(self):
+    """
+    Perform a "pivot" step of the simplex algorithm.
+
+    The way to select a basic variable
+    """
+    pass

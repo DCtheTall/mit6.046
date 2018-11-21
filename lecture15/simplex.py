@@ -236,6 +236,12 @@ def simplex(c, A_ub, b_ub):
   performs pivots using the process
   described above.
 
+  This particular implementation assumes a
+  solution to the linear program exists. A
+  future improvement would be to add a test
+  at some point that a solution to the system
+  of inequalities exists.
+
   """
   tab = SimplexTableau(c, A_ub, b_ub)
   while tab.pivot_step():
@@ -246,22 +252,21 @@ def simplex(c, A_ub, b_ub):
 if __name__ == '__main__':
   # Example from http://www.math.wsu.edu/faculty/dzhang/201/Guideline%20to%20Simplex%20Method.pdf
   # Correctly prints 12
-  # print simplex(
-  #   (3, 1),
-  #   (
-  #     (2, 1),
-  #     (2, 3),
-  #   ),
-  #   (8, 12),
-  # )
+  print simplex(
+    (3, 1),
+    (
+      (2, 1),
+      (2, 3),
+    ),
+    (8, 12),
+  )
   # Example from https://en.wikipedia.org/wiki/Simplex_algorithm
   # Correctly prints 20
-  # print simplex(
-  #   (2, 3, 4),
-  #   (
-  #     (3, 2, 1),
-  #     (2, 5, 3),
-  #   ),
-  #   (10, 15),
-  # )
-  pass
+  print simplex(
+    (2, 3, 4),
+    (
+      (3, 2, 1),
+      (2, 5, 3),
+    ),
+    (10, 15),
+  )

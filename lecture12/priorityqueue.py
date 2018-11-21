@@ -45,13 +45,6 @@ class PriorityQueue(object):
     """
     return key in self.data
 
-  def update(self, key, val):
-    """
-    Update the priority (val) of a key in the queue
-
-    """
-    self.data[key] = val
-
   def pop_min(self):
     """
     Pop key with minimum priority in O(n) time
@@ -60,3 +53,10 @@ class PriorityQueue(object):
     u = min(self.data, key=self.data.get)
     del self.data[u]
     return u
+
+  def update(self, key, val):
+    """
+    Update the priority (val) of a key in the queue
+
+    """
+    self.data[key] = val

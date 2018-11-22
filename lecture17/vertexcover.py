@@ -38,6 +38,12 @@ class Graph(object):
   a set of vertices and an adjacency list
   to represent the edges
 
+  The constructor expects a set or list
+  of tuples representing the edges of
+  the graph. For this example, we will
+  make the assumption that each vertex
+  in the graph belongs to an edge.
+
   """
   def __init__(self, edges):
     self.adjacency_list = dict()

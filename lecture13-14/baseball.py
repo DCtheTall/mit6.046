@@ -188,4 +188,3 @@ if __name__ == '__main__':
   )
   print standings.get_if_team_can_win('Detroit')
   # Correctly shows that Detroit could still win
-

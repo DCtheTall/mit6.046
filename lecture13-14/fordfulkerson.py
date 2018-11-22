@@ -80,4 +80,3 @@ if __name__ == '__main__':
     ('d', 't'): 3,
   })
   print ford_fulkerson(network) # correctly prints 4
-

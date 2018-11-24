@@ -1,6 +1,5 @@
 """
-Lecture 17:
-Approximation Algorithms:
+Lecture 17: Approximation Algorithms
 Vertex Cover
 ------------
 This program contains two approximation algorithms

@@ -1,6 +1,5 @@
 """
-Lecture 17:
-Approximation Algorithms:
+Lecture 17: Approximation Algorithms
 Set Cover
 ---------
 

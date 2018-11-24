@@ -179,8 +179,9 @@ class SimplexTableau(object):
     3. Row reduction
     4. Variable elimination
 
-    Returns a boolean: true if the pivot executed (continue iterating)
-                       false if optimal solution is found (stop algorithm)
+    Returns a boolean:
+      true if the pivot executed (continue iterating)
+      false if optimal solution is found (stop algorithm)
     """
     # column selection
     best = 0

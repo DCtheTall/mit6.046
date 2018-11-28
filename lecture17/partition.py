@@ -49,3 +49,35 @@ def brute_force_partition(S):
       partition = (A, B)
       best = val
   return partition
+
+
+def approximate_partition(S, m):
+  """
+  Below is an approximation algorithm for partitioning
+  a set S by finding an approximate partition of S.
+
+  It first finds an exact partition of a subset of S that
+  contains the m greatest elements in S.
+
+  It then finds an approximate partition of S in polynomial
+  time by adding each successive element of S (if S is sorted
+  in descending order) to the subset with the smallest current
+  sum.
+
+  It is shown in lecture that this algorithm is an
+  (1 + (1 / m + 1))-approximation algorithm.
+
+  """
+  n = len(S)
+  if m < 1 or m > n:
+    raise Exception(
+      'm must be a natural number less than the size of S')
+  S_sorted = list(S)
+  S_sorted.sort(reverse=True)
+  A, B = brute_force_partition(set(S_sorted[:m]))
+  for i in range(m, n):
+    if sum(A) <= sum(B):
+      A.add(S_sorted[i])
+    else:
+      B.add(S_sorted[i])
+  return (A, B)

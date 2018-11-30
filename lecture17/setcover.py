@@ -28,13 +28,34 @@ def set_cover(X, subsets):
 
   """
   cover = set()
+  subsets_copy = list(subsets)
   while True:
-    S = max(subsets, key=len)
+    S = max(subsets_copy, key=len)
     if len(S) == 0:
       break
     cover.add(subsets.index(S))
+    subsets_copy.pop(subsets_copy.index(S))
     for x in S:
-      for T in subsets:
-        if x in T:
+      for T in subsets_copy:
+        if x in set(T):
           T.remove(x)
   return cover
+
+
+if __name__ == '__main__':
+  """
+  Below is an implementation of the example of
+  set cover in lecture 17
+
+  """
+  X = {i for i in range(12)}
+  subsets = [
+    {i for i in range(6)},
+    {4, 5, 7, 8},
+    {3 * i for i in range(4)},
+    {9, 10},
+    {(3 * i) + 2 for i in range(4)},
+    {1, 4, 6, 7, 10},
+  ]
+  print set_cover(X, subsets)
+

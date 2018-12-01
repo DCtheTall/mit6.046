@@ -81,8 +81,8 @@ def kernelized_brute_force_k_vertex_cover(graph, k):
     raise Exception(
       'k must not be a positive integer greater than the number of vertices in the graph')
   kernelized_graph, k_prime = k_vertex_cover_kernelize(graph, k)
-  ve = len(kernelized_graph.vertices) + len(kernelized_graph.edges)
-  if ve > (3 * (k ** 2)):
+  v, e = len(kernelized_graph.vertices), len(kernelized_graph.edges)
+  if k_prime < 0 or v > k * (k + 1) or e > k ** 2:
     return False
   return brute_force_k_vertex_cover(kernelized_graph, k_prime)
 
@@ -101,7 +101,7 @@ def kernelized_bounded_search_tree_k_vertex_cover(graph, k):
     raise Exception(
       'k must not be a positive integer greater than the number of vertices in the graph')
   kernelized_graph, k_prime = k_vertex_cover_kernelize(graph, k)
-  ve = len(kernelized_graph.vertices) + len(kernelized_graph.edges)
-  if ve > (3 * (k ** 2)):
+  v, e = len(kernelized_graph.vertices), len(kernelized_graph.edges)
+  if k_prime < 0 or v > k * (k + 1) or e > k ** 2:
     return False
   return bounded_search_tree_k_vertex_cover(kernelized_graph, k_prime)

@@ -32,6 +32,10 @@ class Graph(object):
   k-Vertex Cover algorithms covered in
   this lecture.
 
+  For this implementation, we are going
+  to assume that the graph is simplie,
+  i.e. it has no multi-edges or loops.
+
   The constructor expects a set (or list)
   of 2-tuples representing each edge in
   the graph. Each element of the tuple
@@ -42,9 +46,18 @@ class Graph(object):
   def __init__(self, edges):
     self.edges = edges
     self.vertices = set()
+    self.adjacency_list = dict()
     for u, v in edges:
       self.vertices.add(u)
       self.vertices.add(v)
+      try:
+        self.adjacency_list[u].add(v)
+      except:
+        self.adjacency_list[u] = {v}
+      try:
+        self.adjacency_list[v].add(u)
+      except:
+        self.adjacency_list[v] = {u}
 
   def copy(self):
     """
@@ -53,6 +66,24 @@ class Graph(object):
 
     """
     return Graph(set(self.edges))
+
+  def delete_vertex_and_incident_edges(self, u):
+    """
+    Deletes vertex u from the graph and
+    all incident edges on u
+
+    Time complexity: O(E)
+
+    """
+    self.vertices.remove(u)
+    del self.adjacency_list[u]
+    for v, w in set(self.edges):
+      if u == v or u == w:
+        self.edges.remove((v, w))
+        if u == v:
+          self.adjacency_list[w].remove(v)
+        else:
+          self.adjacency_list[v].remove(w)
 
 
 def brute_force_k_vertex_cover(graph, k):
@@ -64,7 +95,7 @@ def brute_force_k_vertex_cover(graph, k):
 
   This time complexity of this algorithm is
 
-  O(EV^k)
+  O(E * V^k)
 
   since the number of combinations of k vertices
   grows exponentially with respect to V.
@@ -85,21 +116,6 @@ def brute_force_k_vertex_cover(graph, k):
   return False
 
 
-def delete_vertex_and_edges(graph, u):
-  """
-  Returns a copy of the graph where u is deleted
-  from the graphs vertices and all incident edges
-  on u are deleted as well.
-
-  """
-  result = graph.copy()
-  result.vertices.remove(u)
-  for v, w in graph.edges:
-    if u == v or u == w:
-      result.edges.remove((v, w))
-  return result
-
-
 def bounded_search_tree_k_vertex_cover(graph, k):
   """
   Bounded search tree method for finding if a graph
@@ -117,6 +133,17 @@ def bounded_search_tree_k_vertex_cover(graph, k):
   graph should no longer have any edges remaining, otherwise
   no vertex cover, S, exists such that |S| <= k.
 
+  Time complexity for this implementation:
+
+  O(2^k * E)
+
+  Since it takes O(E) time to make the copies of the graph
+  and delete each incident edge on the chosen vertex. It
+  does this amount of work over a binary recursion tree of
+  height k. In theory, this algorithm can be as fast as
+  O(2^k * V). This algorithm vastly outperforms the brute
+  force method on large graphs.
+
   """
   if not isinstance(graph, Graph):
     raise TypeError(
@@ -127,7 +154,9 @@ def bounded_search_tree_k_vertex_cover(graph, k):
   if k == 0:
     return len(graph.edges) == 0
   u, v = sample(graph.edges, 1)[0]
-  graph_u = delete_vertex_and_edges(graph, u)
-  graph_v = delete_vertex_and_edges(graph, v)
+  graph_u = graph.copy()
+  graph_v = graph.copy()
+  graph_u.delete_vertex_and_incident_edges(u)
+  graph_v.delete_vertex_and_incident_edges(v)
   return bounded_search_tree_k_vertex_cover(graph_u, k - 1) \
     or bounded_search_tree_k_vertex_cover(graph_v, k - 1)

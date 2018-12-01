@@ -58,4 +58,3 @@ if __name__ == '__main__':
     {1, 4, 6, 7, 10},
   ]
   print set_cover(X, subsets)
-

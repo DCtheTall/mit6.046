@@ -106,7 +106,7 @@ def brute_force_k_vertex_cover(graph, k):
       'the first argument of brute_force_k_vertex_cover must be an instance of Graph')
   if not isinstance(k, int) or k <= 0 or len(graph.vertices) < k:
     raise Exception(
-      'k must not be a positive integer greater than the number of vertices in the graph')
+      'k must be a a positive integer less than or equal to than the number of vertices in the graph')
   for S in combinations(graph.vertices, k):
     for u, v in graph.edges:
       if u not in S and v not in S:
@@ -150,7 +150,7 @@ def bounded_search_tree_k_vertex_cover(graph, k):
       'the first argument of brute_force_k_vertex_cover must be an instance of Graph')
   if not isinstance(k, int) or k < 0 or len(graph.vertices) < k:
     raise Exception(
-      'k must not be a non-negative integer greater than the number of vertices in the graph')
+      'k must be a a positive integer less than or equal to than the number of vertices in the graph')
   if k == 0:
     return len(graph.edges) == 0
   u, v = sample(graph.edges, 1)[0]

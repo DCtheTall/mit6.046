@@ -64,6 +64,8 @@ def k_vertex_cover_kernelize(graph, k):
     if len(graph.adjacency_list[u]) > k:
       kernelized_graph.delete_vertex_and_incident_edges(u)
       k_prime -= 1
+      if k_prime == 0:
+        break
   return (kernelized_graph, k_prime)
 
 
@@ -81,8 +83,10 @@ def kernelized_brute_force_k_vertex_cover(graph, k):
     raise Exception(
       'k must be a a positive integer less than or equal to than the number of vertices in the graph')
   kernelized_graph, k_prime = k_vertex_cover_kernelize(graph, k)
+  if k_prime == 0:
+    return len(kernelized_graph.edges) == 0
   v, e = len(kernelized_graph.vertices), len(kernelized_graph.edges)
-  if k_prime <= 0 or v > k * (k + 1) or e > k ** 2:
+  if v > k * (k + 1) or e > k ** 2:
     return False
   return brute_force_k_vertex_cover(kernelized_graph, k_prime)
 
@@ -101,7 +105,9 @@ def kernelized_bounded_search_tree_k_vertex_cover(graph, k):
     raise Exception(
       'k must be a a positive integer less than or equal to than the number of vertices in the graph')
   kernelized_graph, k_prime = k_vertex_cover_kernelize(graph, k)
+  if k_prime == 0:
+    return len(kernelized_graph.edges) == 0
   v, e = len(kernelized_graph.vertices), len(kernelized_graph.edges)
-  if k_prime <= 0 or v > k * (k + 1) or e > k ** 2:
+  if v > k * (k + 1) or e > k ** 2:
     return False
   return bounded_search_tree_k_vertex_cover(kernelized_graph, k_prime)

@@ -46,13 +46,14 @@ class Node(object):
   each node is aware of only its own unique
   id and the channels to its neighbors.
 
-  Has an integer key storing the node's id
-  and a list storing the ids it receives
-  from messages from other nodes
+  Each node starts not knowing the uid of its
+  neighbors, but after one round of either
+  algorithm, the node learns its neighbors
+  ids
 
   """
   def __init__(self, uid=None):
-    self.data = []
+    self.neighbors_uids = []
     self.uid = uid
 
   def receive_uid(self, uid):
@@ -61,7 +62,7 @@ class Node(object):
     channel when a message is emitted.
 
     """
-    self.data.append(uid)
+    self.neighbors_uids.append(uid)
 
   def output_is_leader(self):
     """
@@ -70,7 +71,7 @@ class Node(object):
     if it is the leader or a follower node.
 
     """
-    max_uid = max(self.data)
+    max_uid = max(self.neighbors_uids)
     if self.uid == max_uid:
       raise Exception('Duplicate max uid')
     elif self.uid > max_uid:
@@ -152,6 +153,8 @@ def deterministic_elect_leader(network):
   Deterministic algorithm for choosing a leader
   node in a synchronized distributed network
   uses methods defined in the CliqueNetwork class
+  all nodes should ouput FOLLOWER except the last
+  added.
 
   """
   if not isinstance(network, CliqueNetwork):
@@ -174,6 +177,22 @@ def ceil(a, b):
 
 def probabilistic_elect_leader(network, epsilon):
   """
+  Probabilistic algorithm for leader election in a network
+  of nodes. In this case, uids are not assigned before
+  the call (if they are they are overwritten) with a random
+  set of keys from 1 to upper_bound where
+
+  upper_bound = ceil(n ** 2, (2 * epsilon))
+
+  Recall for distributed networks n = |V| where G(V, E)
+  is the graph representation.
+
+  It is shown in lecture notes it is guaranteed to
+  produce a unique maximum with
+  probability.
+
+  1 - epsilon
+
   """
   if not isinstance(network, CliqueNetwork):
     raise TypeError(

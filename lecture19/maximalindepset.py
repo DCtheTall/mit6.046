@@ -22,7 +22,23 @@ is a subset of V, let's call it S, such that
   independence property (maximality).
 
 This program has an implementation of a probabilistic
-algorithm covered in lecture. Each "active" node
+algorithm covered in lecture. Each node starts as
+being marked as "active."
+
+Each round, each active node generates a unique
+ID from 1 to n ** 5 (recall n = |V| = number of
+nodes). Each active node then exchanges its uid
+with each of its active neighbors.
+
+If a node's uid is strictly greater than all of
+its neighbors uid, this node will output it
+is IN the MIS. It is marked as inactive and
+then sends an "in MIS" message to each of its
+neighbors. Its neighbors then output they are
+OUT of the MIS, and they are marked as inactive.
+
+The algorithm continues until all nodes are
+marked as inactive.
 
 """
 
@@ -34,88 +50,188 @@ IN = 'IN'
 OUT = 'OUT'
 
 
-class NodeState(object):
-  """
-  This is a serealizable object
-  which represents each network
-  node's state during the algorithm.
-
-  The Channel objects exchange instances
-  of this object for nodes to communicate
-  what their current state in the current
-  round of the algorithm is.
-
-  """
-  def __init__(self, uid):
-    self.active = True
-    self.in_mis = None
-    self.uid = uid
-
-
 class Node(object):
   """
   Node class for representing a node
   in this network for the MIS algorithm.
-  It contains an instance of NodeState
-  representing it own state.
+
+  The node's "key" is the key the Network
+  class stores each Node instance in a
+  dictionary.
+
+  The uid is the random unique ID generated
+  each round for the algorithm to determine
+  the maximal independent subset.
 
   """
-  def __init__(self, uid):
-    self.state = NodeState(uid)
-    self.neighbors_state = []
+  def __init__(self, key):
+    self.active = True
+    self.in_mis = None
+    self.key = key
+    self.uid = None
+    self.neighbors_uids = []
     self.channels = []
 
   def receive_in_mis(self):
-    self.state.in_mis = OUT
-    self.state.active = False
+    """
+    This method is for handling when a node
+    receives a message from its neighbor
+    that the neighbor is in the MIS
 
-  def receive_state(self, state):
+    """
+    self.in_mis = OUT
+    self.active = False
+
+  def receive_uid(self, uid):
     """
     Receive an instance of NodeState
     from a data channel
 
     """
-    max_uid = map(
-      map(lambda state: state.uid, self.neighbors_state))
-    if self.state.uid > max_uid:
-      self.state.in_mis = IN
-      self.state.active = False
+    self.neighbors_uids.append(uid)
+
+  def handle_result_of_round(self):
+    """
+    Handle a round of the algorithm after
+    a uid has been randomly assigned and
+    messages between active nodes have
+    been sent.
+
+    """
+    max_uid = max(self.neighbors_uids)
+    if self.uid > max_uid:
+      self.in_mis = IN
+      self.active = False
       for c in self.channels:
-        c.send_from(self).send_in_mis()
+        c.send_in_mis(self)
 
 
 class Channel(object):
+  """
+  Channel object represents an edge
+  in the graph representation of the
+  network. It is a two way channel
+  through which each node can send
+  messages to its pair.
+
+  """
   def __init__(self, u, v):
     self.nodes = (u, v)
-    self.from_node = None
 
-  def emit_states(self):
+  def exchange_uids(self):
+    """
+    Have the two nodes at either end of the
+    channel exchange uids.
+
+    """
     u, v = self.nodes
-    u.receive_state(v.state)
-    v.receive_state(u.state)
+    v.receive_uid(u.uid)
+    u.receive_uid(v.uid)
 
-  def send_from(self, u):
-      self.from_node = u
-      return self
+  def send_in_mis(self, u):
+    """
+    Have the node u send that it is
+    in the maximal independent subset
+    to its neighbor on the other end
+    of the channel.
 
-  def send_in_mis(self):
-    u, v = self.nodes
-    if u == self.from_node:
-      v.receive_in_mis()
+    """
+    v, w = self.nodes
+    if u == v:
+      w.receive_in_mis()
     else:
-      u.receive_in_mis()
+      v.receive_in_mis()
 
 
 class Network(object):
+  """
+  Network class is a representation
+  of a synchronized network using
+  Node instances for vertices and
+  Channel instances for edges.
+
+  """
   def __init__(self):
-    self.nodes = {}
+    self.nodes = dict()
     self.channels = []
 
-  def add_node(self, uid):
-    self.nodes[uid] = Node(uid)
+  def add_channel(self, u_key, v_key):
+    """
+    Add a channel between nodes at the
+    specified key
 
-  def add_channel(self, uid_u, uid_v):
-    u, v = self.nodes[uid_u], self.nodes[uid_v]
+    """
+    u, v = self.nodes[u_key], self.nodes[v_key]
     c = Channel(u, v)
     u.channels.append(c)
-    v.channels.append(v)
+    v.channels.append(c)
+    self.channels.append(c)
+
+  def add_node(self, key):
+    """
+    Add a node to the network and
+    give it the unique id "key"
+
+    """
+    self.nodes[key] = Node(key)
+
+  def execute_round(self):
+    """
+    Execute a round of the MIS algorithm.
+    Each active node generates a unique
+    id from 1 to n ** 5. Each channel
+    where both nodes are active exchanges
+    its nodes' uids. The Node then computes
+    the new state after the transmission
+    is complete.
+
+    """
+    should_continue = False
+    n = len(self.nodes)
+    for u in map(self.nodes.get, self.nodes):
+      if u.active:
+        u.uid = randint(1, n ** 5)
+    for c in self.channels:
+      u, v = c.nodes
+      if u.active and v.active:
+        c.exchange_uids()
+    for u in map(self.nodes.get, self.nodes):
+      if u.active:
+        u.handle_result_of_round()
+      should_continue |= u.active
+    return should_continue
+
+  def output_result(self):
+    """
+    Outputs if each node is in the MIS
+    in the order of their keys in the
+    dictionary.
+
+    """
+    for u in map(
+      self.nodes.get, sorted(self.nodes.keys())):
+        print u.in_mis
+
+
+def maximal_independent_subset(network):
+  """
+  Maximal indendent subset synchronized
+  distributed algorithm.
+
+  An implementation of the MIS algorithm
+  from lecture using the objects defined
+  above.
+
+  Complexity:
+
+  Number of message: O(V + E) = O(n ** 2)
+  Number of rounds: O(4 * log(n))
+
+  """
+  if not isinstance(network, Network):
+    raise TypeError(
+      'argument of maximal_independent_subset must be an instance of Network')
+  should_continue = network.execute_round()
+  while should_continue:
+    should_continue = network.execute_round()
+  network.output_result()

@@ -128,7 +128,7 @@ class CliqueNetwork(object):
       self.channels.append(Channel(u, v))
     self.nodes.append(u)
 
-  def emit_messages(self):
+  def execute_round(self):
     """
     Emit a two-way message across each channel
     in the network. In this case each node emits
@@ -156,11 +156,16 @@ def deterministic_elect_leader(network):
   all nodes should ouput FOLLOWER except the last
   added.
 
+  Complexity:
+
+  Number of rounds: O(1)
+  Number of messages: O(n ** 2)
+
   """
   if not isinstance(network, CliqueNetwork):
     raise TypeError(
       'first argument of deterministic_leader_election must be an instance of CliqueNetwork')
-  network.emit_messages()
+  network.execute_round()
   network.output_result()
 
 
@@ -193,6 +198,9 @@ def probabilistic_elect_leader(network, epsilon):
 
   1 - epsilon
 
+  Number of rounds: O(1)
+  Number of messages: O(n ** 2)
+
   """
   if not isinstance(network, CliqueNetwork):
     raise TypeError(
@@ -201,7 +209,7 @@ def probabilistic_elect_leader(network, epsilon):
   upper_bound = ceil(n ** 2, (2 * epsilon))
   for u in network.nodes:
     u.uid = randint(1, upper_bound)
-  network.emit_messages()
+  network.execute_round()
   try:
     network.output_result()
   except:

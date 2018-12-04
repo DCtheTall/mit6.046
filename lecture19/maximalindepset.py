@@ -1,7 +1,7 @@
 """
 Lecture 19: Synchronous Distributed Algorithms
-Maximal Independent Set
------------------------
+Luby's Maximal Independent Set Algorithm
+----------------------------------------
 This lecture is the first on distributed algorithms,
 algorithms which are executed on a network of machines
 or processors that store memory.
@@ -21,21 +21,23 @@ is a subset of V, let's call it S, such that
   will create a new set that violates the
   independence property (maximality).
 
-This program has an implementation of a probabilistic
-algorithm covered in lecture. Each node starts as
-being marked as "active."
+This program has an implementation of a Luby's MIS
+algorithm, a probabilistic algorithm covered in
+lecture:
 
-Each round, each active node generates a unique
-ID from 1 to n ** 5 (recall n = |V| = number of
-nodes). Each active node then exchanges its uid
-with each of its active neighbors.
+1.  Each node starts as being marked as "active."
 
-If a node's uid is strictly greater than all of
-its neighbors uid, this node will output it
-is IN the MIS. It is marked as inactive and
-then sends an "in MIS" message to each of its
-neighbors. Its neighbors then output they are
-OUT of the MIS, and they are marked as inactive.
+2.  Each round, each active node generates a unique
+    ID from 1 to n ** 5 (recall n = |V| = number of
+    nodes). Each active node then exchanges its uid
+    with each of its active neighbors.
+
+3.  If a node's uid is strictly greater than all of
+    its neighbors uid, this node will output it
+    is IN the MIS. It is marked as inactive and
+    then sends an "in MIS" message to each of its
+    neighbors. Its neighbors then output they are
+    OUT of the MIS, and they are marked as inactive.
 
 The algorithm continues until all nodes are
 marked as inactive.
@@ -181,7 +183,7 @@ class Network(object):
     Each active node generates a unique
     id from 1 to n ** 5. Each channel
     where both nodes are active exchanges
-    its nodes' uids. The Node then computes
+    its nodes' uids. The node then computes
     the new state after the transmission
     is complete.
 
@@ -213,7 +215,7 @@ class Network(object):
         print u.in_mis
 
 
-def maximal_independent_subset(network):
+def luby_maximal_independent_subset(network):
   """
   Maximal indendent subset synchronized
   distributed algorithm.
@@ -225,7 +227,7 @@ def maximal_independent_subset(network):
   Complexity:
 
   Number of message: O(V + E) = O(n ** 2)
-  Number of rounds: O(4 * log(n))
+  Number of rounds: O(4 * log(n)) (with probability 1 - (1 / n))
 
   """
   if not isinstance(network, Network):

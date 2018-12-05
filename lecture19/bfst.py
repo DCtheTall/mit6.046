@@ -36,6 +36,7 @@ class Node(object):
   def __init__(self, uid):
     self.channels = dict()
     self.children = set()
+    self.distance = float('inf')
     self.done = False
     self.is_parent = False
     self.parent = None
@@ -44,65 +45,131 @@ class Node(object):
     self.visited = False
 
   def handle_done_msg(self):
+    """
+    Compute the node's state after
+    it receives a done message from one
+    of its children. If the node is not
+    yet marked as "done" then it is
+    marked as "done" and tells its channels
+    to emit a "done" message to the node's
+    neighbors.
+
+    """
     if not self.done:
       self.done = True
       for c in map(self.channels.get, self.channels):
         c.send_done_msg(self)
 
   def handle_parent_resp(self, src_uid, msg):
+    """
+    Compute the node's state when it receives
+    a "is parent" response from a node after
+    sending a "search" message
+
+    """
     self.is_parent = msg == PARENT
     if self.is_parent:
       self.children.add(src_uid)
 
-  def handle_search_msg(self, src_uid):
+  def handle_search_msg(self, src_uid, dist):
+    """
+    Compute the node's state when it receives
+    a "search" message from one of its neighbors.
+
+    """
     self.searching = False
     if self.visited:
       self.channels[src_uid].send_parent_resp(self, NON_PARENT)
     else:
+      self.distance = dist + 1
       self.parent = src_uid
       self.searching = True
       self.visited = True
       self.channels[src_uid].send_parent_resp(self, PARENT)
 
   def print_result(self):
-    print '{}: parent: {} children: {}\n'.format(
+    """
+    Ouput the resulting state of the node after
+    running the BFST algorithm.
+
+    """
+    print '{}: parent: {}, distance: {}, children: {}\n'.format(
       self.uid,
       self.parent,
-      self.children,
+      self.distance,
+      sorted(self.children),
     )
 
 
 class Channel(object):
+  """
+  Channel class is an object meant to
+  simulate a connection between nodes
+  in a synchronized distributed network.
+  They are used as the edges of the
+  graph representation of the network.
+
+  """
   def __init__(self, u, v):
     self.nodes = (u, v)
 
   def send_done_msg(self, src):
+    """
+    Send a "done" message from the source node
+    to the other end of the channel
+
+    """
     u, v = self.nodes
     dst = v if src == u else u
     dst.handle_done_msg()
 
   def send_parent_resp(self, src, msg):
+    """
+    Send a "is parent" response from the source node
+    to the other end of the channel, this message
+    indicates to the destination node that it is or
+    is not the parent of this node in the tree.
+
+    """
     u, v = self.nodes
     dst = v if src == u else u
     dst.handle_parent_resp(src.uid, msg)
 
   def send_search_message(self, src):
+    """
+    Sends the "search" message from the source node
+    to the other end of the channel
+
+    """
     u, v = self.nodes
     dst = v if src == u else u
-    dst.handle_search_msg(src.uid)
+    dst.handle_search_msg(src.uid, src.distance)
     if not dst.is_parent:
       self.send_done_msg(dst)
 
 
 class Network(object):
+  """
+  Network class is a graph representation
+  of a synchronized distributed network
+
+  """
   def __init__(self):
     self.nodes = dict()
     self.channels = []
 
   def add_node(self, uid):
+    """
+    Add a node to the network
+
+    """
     self.nodes[uid] = Node(uid)
 
   def add_channel(self, uid_u, uid_v):
+    """
+    Add a channel between existing nodes
+
+    """
     u, v = self.nodes[uid_u], self.nodes[uid_v]
     c = Channel(u, v)
     self.channels.append(c)
@@ -110,6 +177,11 @@ class Network(object):
     v.channels[u.uid] = c
 
   def execute_round(self):
+    """
+    Execute a round of the BFST algorithm for
+    synchronized distributed networks.
+
+    """
     cur_round = set()
     for c in self.channels:
       u, v = c.nodes
@@ -124,23 +196,41 @@ class Network(object):
 
 
 def breadth_first_spanning_tree(network, src_uid):
+  """
+  Breadth-First Spanning Tree algorithm
+  covered in lecture for a synchronized
+  distributed network.
+
+  The first round of the algorithm, the source
+  node (root of the tree) sends a "search" message
+  to each of its channels. Each node is sends a
+  "is parent" response to the source vertex, marks
+  itself as "visited" and "searching" and
+  the algorithm continues to the next round
+
+  For each subsequent round, the nodes marked as
+  "searching" sends a "search" message to their
+  neighbors and the neighbors handle the "search"
+  message the same way as the nodes in the first
+  round.
+
+  This algorithm continues until it reaches only
+  leaf nodes. Leaf nodes are nodes that send "search"
+  messages and after collecting "is parent" responses
+  is not a parent to any node. They then instruct
+  their parents to propagate a "done" message up the
+  parent pointer chain until the source node is marked
+  as "done".
+
+  """
   if not isinstance(network, Network):
     raise TypeError(
       'argument of breadth_first_spanning_tree must be an instance of Network')
   src = network.nodes[src_uid]
   src.searching = True
   src.visited = True
+  src.distance = 0
   while not src.done:
     network.execute_round()
   for u in map(network.nodes.get, network.nodes):
     u.print_result()
-
-
-n = Network()
-n.add_node(1)
-for i in range(2, 11):
-  n.add_node(i)
-  n.add_channel(i, 1)
-n.add_node(11)
-n.add_channel(3, 11)
-breadth_first_spanning_tree(n, 1)

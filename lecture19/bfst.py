@@ -35,6 +35,7 @@ class Node(object):
   """
   def __init__(self, uid):
     self.channels = dict()
+    self.children = set()
     self.done = False
     self.is_parent = False
     self.parent = None
@@ -42,11 +43,16 @@ class Node(object):
     self.uid = uid
     self.visited = False
 
-  def handle_done_message(self):
+  def handle_done_msg(self):
     if not self.done:
       self.done = True
       for c in map(self.channels.get, self.channels):
         c.send_done_msg(self)
+
+  def handle_parent_resp(self, src_uid, msg):
+    self.is_parent = msg == PARENT
+    if self.is_parent:
+      self.children.add(src_uid)
 
   def handle_search_msg(self, src_uid):
     self.searching = False
@@ -59,7 +65,11 @@ class Node(object):
       self.channels[src_uid].send_parent_resp(self, PARENT)
 
   def print_result(self):
-    print '{}: parent: {}'.format(self.uid, self.parent)
+    print '{}: parent: {} children: {}\n'.format(
+      self.uid,
+      self.parent,
+      self.children,
+    )
 
 
 class Channel(object):
@@ -68,15 +78,13 @@ class Channel(object):
 
   def send_done_msg(self, src):
     u, v = self.nodes
-    if u == src:
-      v.handle_done_message()
-    else:
-      u.handle_done_message()
+    dst = v if src == u else u
+    dst.handle_done_msg()
 
   def send_parent_resp(self, src, msg):
     u, v = self.nodes
     dst = v if src == u else u
-    dst.is_parent = msg == PARENT
+    dst.handle_parent_resp(src.uid, msg)
 
   def send_search_message(self, src):
     u, v = self.nodes
@@ -126,3 +134,13 @@ def breadth_first_spanning_tree(network, src_uid):
     network.execute_round()
   for u in map(network.nodes.get, network.nodes):
     u.print_result()
+
+
+n = Network()
+n.add_node(1)
+for i in range(2, 11):
+  n.add_node(i)
+  n.add_channel(i, 1)
+n.add_node(11)
+n.add_channel(3, 11)
+breadth_first_spanning_tree(n, 1)

@@ -222,6 +222,10 @@ def breadth_first_spanning_tree(network, src_uid):
   parent pointer chain until the source node is marked
   as "done".
 
+  Complexity:
+  Number of messages per round: O(V + E) = O(n ** 2)
+  Number of rounds for algo: O(V) = O(n)
+
   """
   if not isinstance(network, Network):
     raise TypeError(

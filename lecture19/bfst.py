@@ -36,29 +36,33 @@ class Node(object):
   def __init__(self, uid):
     self.channels = dict()
     self.children = set()
+    self.children_done = set()
     self.distance = float('inf')
-    self.done = False
+    self.is_done = False
     self.is_parent = False
     self.parent = None
     self.searching = False
     self.uid = uid
     self.visited = False
 
-  def handle_done_msg(self):
+  def handle_done_msg(self, child_uid):
     """
     Compute the node's state after
     it receives a done message from one
     of its children. If the node is not
-    yet marked as "done" then it is
-    marked as "done" and tells its channels
-    to emit a "done" message to the node's
-    neighbors.
+    yet marked as "done" and all of its
+    children are marked "done", then it
+    sends a "done" message across all
+    of its channels
 
     """
-    if not self.done:
-      self.done = True
+    if self.is_done:
+      return
+    self.children_done.add(child_uid)
+    if self.children == self.children_done:
       for c in map(self.channels.get, self.channels):
         c.send_done_msg(self)
+
 
   def handle_parent_resp(self, src_uid, msg):
     """
@@ -67,8 +71,7 @@ class Node(object):
     sending a "search" message
 
     """
-    self.is_parent = msg == PARENT
-    if self.is_parent:
+    if msg == PARENT:
       self.children.add(src_uid)
 
   def handle_search_msg(self, src_uid, dist):
@@ -77,7 +80,6 @@ class Node(object):
     a "search" message from one of its neighbors.
 
     """
-    self.searching = False
     if self.visited:
       self.channels[src_uid].send_parent_resp(self, NON_PARENT)
     else:
@@ -119,9 +121,10 @@ class Channel(object):
     to the other end of the channel
 
     """
+    src.is_done = True
     u, v = self.nodes
     dst = v if src == u else u
-    dst.handle_done_msg()
+    dst.handle_done_msg(src.uid)
 
   def send_parent_resp(self, src, msg):
     """
@@ -141,11 +144,12 @@ class Channel(object):
     to the other end of the channel
 
     """
+    src.seaching = False
     u, v = self.nodes
     dst = v if src == u else u
     dst.handle_search_msg(src.uid, src.distance)
-    if not dst.is_parent:
-      self.send_done_msg(dst)
+    if len(src.children) == 0:
+      self.send_done_msg(src)
 
 
 class Network(object):
@@ -182,17 +186,12 @@ class Network(object):
     synchronized distributed networks.
 
     """
-    cur_round = set()
     for c in self.channels:
       u, v = c.nodes
       if u.searching:
         c.send_search_message(u)
-        cur_round.add(u.uid)
       elif v.searching:
         c.send_search_message(v)
-        cur_round.add(v.uid)
-    for uid in cur_round:
-      self.nodes[uid].searching = False
 
 
 def breadth_first_spanning_tree(network, src_uid):
@@ -234,7 +233,7 @@ def breadth_first_spanning_tree(network, src_uid):
   src.searching = True
   src.visited = True
   src.distance = 0
-  while not src.done:
+  while not src.is_done:
     network.execute_round()
   for u in map(network.nodes.get, network.nodes):
     u.print_result()

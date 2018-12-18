@@ -145,7 +145,8 @@ def bellman_ford_shortest_path(network, src_uid):
     raise TypeError(
       'argument of bellman_ford_shortest_path must be a Network instance')
   network.nodes[src_uid].distance = 0
-  for _ in network.nodes:
+  n = len(network.nodes)
+  for _ in range(n - 1):
     for c in network.channels:
       c.send_distance_msg()
   for u in network.nodes:

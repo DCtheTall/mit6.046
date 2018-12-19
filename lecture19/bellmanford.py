@@ -128,7 +128,7 @@ class Network(object):
     self.channels.append(Channel(u, v, cost))
 
 
-def bellman_ford_shortest_path(network, src_uid):
+def bellman_ford(network, src_uid):
   """
   Bellman-ford shortest path algorithm for
   a synchronized distributed network.

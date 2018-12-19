@@ -60,7 +60,8 @@ class Node(object):
       return
     self.children_done.add(child_uid)
     if self.children == self.children_done:
-      for c in map(self.channels.get, self.channels):
+      self.is_done = True
+      for c in self.channels.values():
         c.send_done_msg(self)
 
 
@@ -121,7 +122,6 @@ class Channel(object):
     to the other end of the channel
 
     """
-    src.is_done = True
     u, v = self.nodes
     dst = v if src == u else u
     dst.handle_done_msg(src.uid)
@@ -148,8 +148,6 @@ class Channel(object):
     u, v = self.nodes
     dst = v if src == u else u
     dst.handle_search_msg(src.uid, src.distance)
-    if len(src.children) == 0:
-      self.send_done_msg(src)
 
 
 class Network(object):
@@ -160,7 +158,6 @@ class Network(object):
   """
   def __init__(self):
     self.nodes = dict()
-    self.channels = []
 
   def add_node(self, uid):
     """
@@ -176,7 +173,6 @@ class Network(object):
     """
     u, v = self.nodes[uid_u], self.nodes[uid_v]
     c = Channel(u, v)
-    self.channels.append(c)
     u.channels[v.uid] = c
     v.channels[u.uid] = c
 
@@ -186,12 +182,14 @@ class Network(object):
     synchronized distributed networks.
 
     """
-    for c in self.channels:
-      u, v = c.nodes
+    for u in self.nodes.values():
       if u.searching:
-        c.send_search_message(u)
-      elif v.searching:
-        c.send_search_message(v)
+        for c in u.channels.values():
+          c.send_search_message(u)
+        if len(u.children) == 0:
+          u.is_done = True
+          for c in u.channels.values():
+            c.send_done_msg(u)
 
 
 def breadth_first_spanning_tree(network, src_uid):
@@ -235,5 +233,5 @@ def breadth_first_spanning_tree(network, src_uid):
   src.distance = 0
   while not src.is_done:
     network.execute_round()
-  for u in map(network.nodes.get, network.nodes):
+  for u in network.nodes.values():
     u.print_result()

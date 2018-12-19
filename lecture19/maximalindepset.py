@@ -190,14 +190,14 @@ class Network(object):
     """
     should_continue = False
     n = len(self.nodes)
-    for u in map(self.nodes.get, self.nodes):
+    for u in self.nodes.values():
       if u.active:
         u.uid = randint(1, n ** 5)
     for c in self.channels:
       u, v = c.nodes
       if u.active and v.active:
         c.exchange_uids()
-    for u in map(self.nodes.get, self.nodes):
+    for u in self.nodes.values():
       if u.active:
         u.handle_result_of_round()
       should_continue |= u.active

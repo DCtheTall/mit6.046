@@ -45,7 +45,7 @@ class Node(object):
     self.uid = uid
     self.visited = False
 
-  def handle_done_msg(self, child_uid):
+  def receive_done_msg(self, child_uid):
     """
     Compute the node's state after
     it receives a done message from one
@@ -65,7 +65,7 @@ class Node(object):
         c.send_done_msg(self)
 
 
-  def handle_parent_resp(self, src_uid, msg):
+  def receive_parent_resp(self, src_uid, msg):
     """
     Compute the node's state when it receives
     a "is parent" response from a node after
@@ -75,7 +75,7 @@ class Node(object):
     if msg == PARENT:
       self.children.add(src_uid)
 
-  def handle_search_msg(self, src_uid, dist):
+  def receive_search_msg(self, src_uid, dist):
     """
     Compute the node's state when it receives
     a "search" message from one of its neighbors.
@@ -124,7 +124,7 @@ class Channel(object):
     """
     u, v = self.nodes
     dst = v if src == u else u
-    dst.handle_done_msg(src.uid)
+    dst.receive_done_msg(src.uid)
 
   def send_parent_resp(self, src, msg):
     """
@@ -136,7 +136,7 @@ class Channel(object):
     """
     u, v = self.nodes
     dst = v if src == u else u
-    dst.handle_parent_resp(src.uid, msg)
+    dst.receive_parent_resp(src.uid, msg)
 
   def send_search_message(self, src):
     """
@@ -147,7 +147,7 @@ class Channel(object):
     src.seaching = False
     u, v = self.nodes
     dst = v if src == u else u
-    dst.handle_search_msg(src.uid, src.distance)
+    dst.receive_search_msg(src.uid, src.distance)
 
 
 class Network(object):

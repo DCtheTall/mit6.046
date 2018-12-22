@@ -92,7 +92,7 @@ class Node(object):
     """
     self.neighbors_uids.append(uid)
 
-  def handle_result_of_round(self):
+  def receive_result_of_round(self):
     """
     Handle a round of the algorithm after
     a uid has been randomly assigned and
@@ -199,7 +199,7 @@ class Network(object):
         c.exchange_uids()
     for u in self.nodes.values():
       if u.active:
-        u.handle_result_of_round()
+        u.receive_result_of_round()
       should_continue |= u.active
     return should_continue
 

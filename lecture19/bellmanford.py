@@ -51,7 +51,7 @@ class Node(object):
     self.distance = float('inf')
     self.parent = None
 
-  def handle_distance_msg(self, uid, distance):
+  def receive_distance_msg(self, uid, distance):
     """
     The node receives a message from its neighbor
     with the neighbor's total distance from the
@@ -97,8 +97,8 @@ class Channel(object):
 
     """
     u, v = self.nodes
-    u.handle_distance_msg(v.uid, v.distance + self.cost)
-    v.handle_distance_msg(u.uid, u.distance + self.cost)
+    u.receive_distance_msg(v.uid, v.distance + self.cost)
+    v.receive_distance_msg(u.uid, u.distance + self.cost)
 
 
 class Network(object):

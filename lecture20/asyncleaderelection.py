@@ -19,7 +19,16 @@ This program convers asynchronous leader election, where a
 network of nodes reaches a consensus on which node has the
 greatest key.
 
-The algorithm starts
+The algorithm starts having each node enqueue a message
+with its key in all of its channels. Then as the channels
+dequeue their messages, when a node received a message
+with a key greater than the greatest key the node has seen
+so far (starting with just its own key), it stores the
+new value and emits messages again across all of its channels.
+
+The algorithm converges when each key learns of the
+globally maximum key in the network, and no longer adds
+messages to their channels' queue.
 
 """
 

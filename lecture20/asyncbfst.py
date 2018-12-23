@@ -153,7 +153,7 @@ def async_bfst(network, src):
   """
   if not isinstance(network, Network):
     raise TypeError(
-        'argument of async_bfst must be an instance of Network')
+        'first argument of async_bfst must be an instance of Network')
   src = network.nodes[src]
   src.visited = True
   src.distance = 0

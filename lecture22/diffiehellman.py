@@ -46,7 +46,7 @@ class Service(object):
     self.port = None
     self.prime = None
 
-  def compute_payload(self):
+  def compute_key(self):
     return (self.base ** self.exponent) % self.prime
 
   def receive_base(self, base):
@@ -56,7 +56,7 @@ class Service(object):
     """
     self.base = base
 
-  def receive_message(self, payload):
+  def receive_public_key(self, payload):
     """
     Receive the public message from the
     other service. Computes the shared
@@ -93,13 +93,13 @@ class Port(object):
     """
     self.dst.receive_base(base)
 
-  def send_message(self):
+  def send_key(self):
     """
     Send the payload from the source service
     to the destination service.
 
     """
-    self.dst.receive_message(self.src.compute_payload())
+    self.dst.receive_public_key(self.src.compute_key())
 
   def send_prime(self, prime):
     """
@@ -123,14 +123,14 @@ class Channel(object):
     v.port.dst = u
     self.ports = [u.port, v.port]
 
-  def exchange_messages(self):
+  def publish_keys(self):
     """
     Exchange messages with the encrypted
     payloads to compute the shared key.
 
     """
     for port in self.ports:
-      port.send_message()
+      port.send_key()
 
   def publish_base(self, base):
     """

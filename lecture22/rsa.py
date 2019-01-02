@@ -5,7 +5,7 @@ RSA Algorithm
 RSA is a form of asymmetric-key cryptography. Let us say
 Alice wants to receive messages from Bob.
 
-Alice chooses two prime integers, p, q, and computes 
+Alice chooses two prime integers, p, q, and computes
 
 N = p * q.
 
@@ -48,12 +48,32 @@ def gcd(a, b):
   Compute GCD of two integers.
 
   """
-  a, b = min(a, b), max(a, b)
-  r = b % a
-  while r != 0:
-    a, b = r, a
-    r = b % a
+  a, b = max(a, b), min(a, b)
+  while b != 0:
+    a, b = b, a % b
   return a
+
+
+def mod_inverse(x, n):
+  """
+  Compute the inverse of x in the multiplicative
+  group of Z/nZ, i.e. the integer y such that
+
+  x * y = 1 mod N.
+
+  The algorithm uses the extended Euclidean
+  algorithm to find the inverse efficiently.
+
+  """
+  a, b = n, x
+  ta, tb = 0, 1
+  while b != 0:
+    q = a / b
+    a, b = b, a % b
+    ta, tb = tb, ta - (q * tb)
+  if ta < 0:
+    ta += n
+  return ta
 
 
 class Service(object):
@@ -71,10 +91,7 @@ class Service(object):
     self.e = randint(2, self.N - 1)
     while gcd(self.e, self.phi) == 1:
       self.e = randint(2, self.N - 1)
-    k = 1
-    while k % self.e != 0:
-      k += self.phi
-    self.d = k / self.e
+    self.d = mod_inverse(self.e, self.phi)
     self.dst_N = None
     self.dst_e = None
     self.port = None
@@ -85,7 +102,7 @@ class Service(object):
 
     """
     return (m ** self.dst_e) % self.dst_N
-  
+
   def receive_key(self, N, e):
     """
     Receive a published encryption key.
@@ -93,7 +110,7 @@ class Service(object):
     """
     self.dst_N = N
     self.dst_e = e
-  
+
   def receive_msg(self, c):
     """
     Receive an encrypted message from the other service

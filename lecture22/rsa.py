@@ -126,7 +126,7 @@ class Service(object):
     using the encryption scheme to another service.
 
     """
-    self.port.send_msg(msg)
+    self.port.send_msg(self.encrypt_msg(msg))
 
 
 class Port(object):
@@ -139,7 +139,7 @@ class Port(object):
     self.src = src
     self.dst = None
 
-  def publish_key(self):
+  def send_key(self):
     """
     Publish the RSA encryption key across the
     channel.
@@ -147,12 +147,11 @@ class Port(object):
     """
     self.dst.receive_key(self.src.N, self.src.e)
 
-  def send_msg(self, msg):
+  def send_msg(self, ciphertext):
     """
     Encrypt then send a message through the channel.
 
     """
-    ciphertext = self.src.encrypt_msg(msg)
     self.dst.receive_msg(ciphertext)
 
 
@@ -179,4 +178,4 @@ class Channel(object):
 
     """
     for port in self.ports:
-      port.publish_key()
+      port.send_key()

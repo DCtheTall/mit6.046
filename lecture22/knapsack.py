@@ -51,6 +51,12 @@ it is, subtract W[i] from c' and set the i^th bit of the
 message to 1. Traverse W until c' is reduced to 0, and the
 resulting 32 bits is the message Bob sent.
 
+The apparent hardness of this cryptosystem comes from the computational
+difficulty of computing which elements in B make up the ciphertext,
+c, without knowledge of (W, q, r). Knowing W, q, r makes the problem
+solvable in polynomial time. However, this cryptosystem has been shown
+to be broken.
+
 """
 
 
@@ -156,3 +162,53 @@ class Service(object):
 
     """
     self.port.send_msg(self.encrypt_msg(msg))
+
+
+def Port(object):
+  """
+  Port object represents a one way connection between two
+  services. The source service pushes messages to the
+  destination vertex.
+
+  """
+  def __init__(self, src):
+    self.src = src
+    self.dst = None
+
+  def send_key(self):
+    """
+    Send a public key from one service to the other.
+
+    """
+    self.dst.receive_key(self.src.B)
+
+  def send_msg(self, ciphertext):
+    """
+    Send an encrypted message through the port.
+
+    """
+    self.dst.receive_msg(ciphertext)
+
+
+class Channel(object):
+  """
+  Channel object represents a connection between
+  two services which consists of two-one way
+  ports.
+
+  """
+  def __init__(self, u, v):
+    u.port = Port(u)
+    v.port = Port(v)
+    u.port.dst = v
+    v.port.dst = u
+    self.ports = [u.port, v.port]
+
+  def publish_keys():
+    """
+    Have the services exchange their public
+    keys.
+
+    """
+    for port in self.ports:
+      port.send_key()

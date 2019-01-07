@@ -141,6 +141,15 @@ class ContiguousArray(object):
       self.cur_block = self.store.get(self.addresses[base_index])
     return self.cur_block[index - base_index]
 
+  def __setitem__(self, index, value):
+    """
+    Set an index in the array, this can be used for parallel scans.
+
+    """
+    self[index] # pull correct block into working memory
+    base_index = (index // self.store.B) * self.store.B
+    self.cur_block[index - base_index] = value
+
   def append(self, block):
     """
     Append a full block of integers to

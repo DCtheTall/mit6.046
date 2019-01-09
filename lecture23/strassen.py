@@ -198,9 +198,3 @@ def strassen_matrix_multiply(A, B):
     square_matrix_sum(M3, M6),
   )
   return merge_quadrants(C11, C12, C21, C22)
-
-
-print strassen_matrix_multiply(
-    [[3, 3, 3], [3, 3, 3], [3, 3, 3]],
-    [[3, 3, 3], [3, 3, 3], [3, 3, 3]],
-)

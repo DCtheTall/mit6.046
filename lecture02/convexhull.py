@@ -1,4 +1,5 @@
 """
+Lecture 3: Divide and Conquer:
 Convex Hull
 -----------
 Topics covered:

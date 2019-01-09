@@ -63,6 +63,8 @@ class Store(object):
     """
     if key in self.memory:
       return self.memory[key]
+    if self.parent is None:
+      return None
     data = self.parent.get(key)
     self.parent.delete(key)
     self.set(key, data)
@@ -89,16 +91,15 @@ class ContiguousArray(object):
   """
   ContiguousArray is an array of integers
   which writes contiguous blocks of memory.
-  It can hold one block of data in working
-  memory, and if it needs to access a block
-  that is not in working memory, it reads a
-  new block from the memory cache and overwrites
-  it.
+  It uses an instance of the Store for the
+  main memory for the process using the
+  array, and its parent can be another Store
+  instance representing the machine's cache.
 
   This data structure is able to sum its elements
-  in O((N / B) + 1) operations because it stores
+  in O((N / B) + 1) memory transfers because it stores
   its elements contriguously, which amortizes the
-  cost of reading blocks from memory for subsequent
+  cost of transferring blocks from memory for subsequent
   reads from the array.
 
   You can do a linear scan from the memory
@@ -106,10 +107,8 @@ class ContiguousArray(object):
   function.
 
   """
-  def __init__(self, store):
+  def __init__(self, store = Store(1024, 64, Store(float('inf'), 64))):
     self.length = 0
-    self.cur_block_index = None
-    self.cur_block = None
     self.addresses = dict()
     self.store = store
 
@@ -136,10 +135,8 @@ class ContiguousArray(object):
     if index < 0 or index >= self.length:
       raise IndexError('Index out of range')
     base_index = (index // self.store.B) * self.store.B
-    if self.cur_block is None or self.cur_block_index != base_index:
-      self.cur_block_index = base_index
-      self.cur_block = self.store.get(self.addresses[base_index])
-    return self.cur_block[index - base_index]
+    block = self.store.get(self.addresses[base_index])
+    return block[index - base_index]
 
   def __setitem__(self, index, value):
     """
@@ -148,17 +145,24 @@ class ContiguousArray(object):
     """
     self[index] # pull correct block into working memory
     base_index = (index // self.store.B) * self.store.B
-    self.cur_block[index - base_index] = value
+    block = self.store.get(self.addresses[base_index])
+    block[index - base_index] = value
 
-  def append(self, block):
+  def append(self, val):
     """
-    Append a full block of integers to
-    the array and store them in the cache.
+    Append a value to the array.
 
     """
-    if len(block) != self.store.B:
-      raise Exception('Invalid block size')
-    key = uuid1()
-    self.addresses[self.length] = key
-    self.store.set(key, block)
-    self.length += self.store.B
+    base_index = (self.length // self.store.B) * self.store.B
+    block = None
+    if base_index in self.addresses:
+      block = self.store.get(self.addresses[base_index])
+    if block is None:
+      key = int(uuid1())
+      self.addresses[self.length] = key
+      block = [None] * 8
+      block[0] = val
+      self.store.set(key, block)
+    else:
+      block[self.length - base_index] = val
+    self.length += 1

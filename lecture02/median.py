@@ -1,6 +1,10 @@
 """
-Median finding
---------------
+Lecture 3: Divide and Conquer:
+Order Statistics and Median Finding
+-----------------------------------
+This program shows a divide and conquer algorithm to
+find the element of rank i in a list of elements S,
+assuming the elements of S are unique.
 
 """
 

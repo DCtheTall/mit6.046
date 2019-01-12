@@ -1,7 +1,7 @@
 """
+Lecture 10: Dynamic Programming
 Alternating Coin Game
 ---------------------
-
 Consider a game where you have a list
 with an even number of coins with
 positive integer values

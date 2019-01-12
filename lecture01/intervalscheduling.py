@@ -1,6 +1,6 @@
 """
-Interval Scheduling
--------------------
+Lecture 1: Interval Scheduling
+------------------------------
 Topics covered:
 - Greedy algorithms
 - Dynamic programming

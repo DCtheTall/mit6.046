@@ -1,6 +1,6 @@
 """
-Linear Programming
-------------------
+Lecture 15: Linear Programming
+------------------------------
 Linear programming is a method of optimization,
 in this case minimization, of a set of parameters.
 

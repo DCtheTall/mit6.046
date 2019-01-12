@@ -85,7 +85,7 @@ class FingerSearchBTree(object):
     Search for a node, dst, from a key or from a provided node
 
     This tree obeys the finger-search property, meaning
-    that this takes no more than O(log(abs(rank(x) - rank(y))))
+    that this takes no more than O(log(abs(rank(src) - rank(dst))))
 
     """
     if isinstance(src, self.type):

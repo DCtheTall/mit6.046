@@ -1,4 +1,5 @@
 """
+Lecture 10: Dynamic Programming
 Longest Palindromic Subsequence
 -------------------------------
 Problem:

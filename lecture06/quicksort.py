@@ -1,4 +1,5 @@
 """
+Lecture 6: Randomization
 Quicksort
 ---------
 Different implmentations of

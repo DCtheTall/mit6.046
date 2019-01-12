@@ -2,7 +2,6 @@
 Lecture 17: Approximation Algorithms
 Set Cover
 ---------
-
 Given a set X and a family of subsets S_1, S_2, ..., S_n,
 find the smallest collection of subsets such that their
 union is equal to all of X.

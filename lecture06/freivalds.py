@@ -1,4 +1,5 @@
 """
+Lecture 6: Randomization
 Frievalds' algorithm
 --------------------
 A randomized algorithm for verifying matrix multiplication.

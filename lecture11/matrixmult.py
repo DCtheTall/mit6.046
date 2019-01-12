@@ -1,7 +1,9 @@
 """
-All-Pairs Shortest Paths
-------------------------
-Matrix multiplication method
+Lecture 11: All-Pairs Shortest Paths
+Matrix Multiplication Method
+----------------------------
+All pairs shortest path matrices multiplication
+method.
 
 """
 

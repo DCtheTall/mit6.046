@@ -1,4 +1,5 @@
 """
+Lecture 9: Augmentation
 1-D Range Tree
 --------------
 
@@ -117,6 +118,12 @@ class RangeTree(object):
     return tmp
 
   def range_search(self, lo, hi):
+    """
+    Return all nodes in the given range.
+    The function returns a list of all nodes
+    and all subtrees in the given range.
+
+    """
     left = self.root.search(lo)
     right = self.root.search(hi)
     lca = self._lowest_common_ancestor(left, right)

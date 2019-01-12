@@ -1,7 +1,7 @@
 """
+Lecture 11: All-Pairs Shortest Paths
 Johnson's Algorithm
-All-Pairs Shortest Path Algorithm
----------------------------------
+-------------------
 Johnson's algorithm in summary is creating a way
 to run Djikstra's algorithm on any arbitrary graph
 that does not have negative weight cycles.

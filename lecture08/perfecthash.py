@@ -1,4 +1,5 @@
 """
+Lecture 8: Randomization
 Minimal Perfect Hasing
 ----------------------
 An implementation of the minimal perfect hash table

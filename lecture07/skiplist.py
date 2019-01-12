@@ -1,6 +1,9 @@
 """
+Lecture 7: Randomization
 Skip Lists
 ----------
+Skip lists are a randomized linked-list like data structure
+that support search in logarithmic time with high probability.
 
 """
 

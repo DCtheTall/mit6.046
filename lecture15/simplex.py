@@ -1,4 +1,5 @@
 """
+Lecture 15: Linear Programming
 Simplex Algorithm
 -----------------
 The simplex algorithm is a linear programming (LP)

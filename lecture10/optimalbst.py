@@ -1,7 +1,7 @@
 """
+Lecture 10: Dynamic Programming
 Optimal BST structure
 ---------------------
-
 Let's say we have a set of n keys to insert into a binary
 search tree and each key, k_0, k_1, ..., k_i, ..., k_(n - 1) has an associated
 search probability w_i.

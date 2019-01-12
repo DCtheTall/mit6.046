@@ -1,6 +1,6 @@
 """
-Fast-Fourier Transform
-----------------------
+Lecture 3: Fast-Fourier Transform
+---------------------------------
 Topics covered:
 - Recursion
 - Divide and conquer

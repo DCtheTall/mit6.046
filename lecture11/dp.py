@@ -1,7 +1,7 @@
 """
-All-Pairs Shortest Paths
-------------------------
-First dynamic programming method
+Lecture 11: All-Pairs Shortest Paths
+------------------------------------
+Dynamic programming method
 
 """
 

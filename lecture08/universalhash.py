@@ -1,4 +1,5 @@
 """
+Lecture 8: Randomization
 Universal Hash Functions
 ------------------------
 An implementation of a hash table with

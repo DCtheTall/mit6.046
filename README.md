@@ -185,7 +185,7 @@ every node.
 ### `matrixmult.py`
 
 This program contains a matrix multiplication all pairs shortest path algorithm using
-a different definition of addition and subtraction.
+a different definition of addition and multiplication.
 
 ## Lecture 12
 

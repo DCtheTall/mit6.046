@@ -35,7 +35,7 @@ class RangeTreeNode(AVLTreeNode):
     Search function is modified for range queries
     so that if a keyue is not in the tree, it'll
     return the leaf node whose subtree would contain
-    the keyue being queried
+    the key being queried
 
     """
     if self.key == key and self.left is None:

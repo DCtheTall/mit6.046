@@ -105,7 +105,7 @@ def merge_quadrants(M11, M12, M21, M22):
 
 def naive_matrix_multiply(A, B):
   """
-  Naive matrimx mulitplication algorithm.
+  Naive matrix mulitplication algorithm.
   The algorithm traverses the matrix A by row
   and B by column and computes the dot product
   of the vectors. This is the standard way of
